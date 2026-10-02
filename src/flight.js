@@ -1,4 +1,4 @@
-import {boardingLengths,captainLengths} from './announcement-timing.js';
+import {boardingLengths,captainLengths} from './announcement-timing.js?v=5a657c1c7d6a';
 // Names, routes and durations remain prototype proposals.
 export const routes = Object.freeze([
   {id:'tokyo', city:'Tokyo', mood:'Dusk above the clouds', duration:300},

@@ -1,6 +1,6 @@
-import {routes, airlines, createFlight, advance, finish, pause, resume, sceneOf, cabinOf, timingOf, announcementOf, skyOf, createDeparture, issueTicket, scanTicket, advanceDeparture, mapPosition, flightMaps, runwayCueOf, cabinLightOf} from './flight.js';
-import {CabinAudio} from './audio.js';
-import {createCabin, look, isDark, readFor, requestDrink, requestClear, serveFor} from './cabin.js';
+import {routes, airlines, createFlight, advance, finish, pause, resume, sceneOf, cabinOf, timingOf, announcementOf, skyOf, createDeparture, issueTicket, scanTicket, advanceDeparture, mapPosition, flightMaps, runwayCueOf, cabinLightOf} from './flight.js?v=5a657c1c7d6a';
+import {CabinAudio} from './audio.js?v=5a657c1c7d6a';
+import {createCabin, look, isDark, readFor, requestDrink, requestClear, serveFor} from './cabin.js?v=5a657c1c7d6a';
 const $=id=>document.getElementById(id), audio=new CabinAudio();
 let departure=createDeparture();
 let selected=routes[0], airline=airlines[0], cabinClass='economy', flight=null, sound=false, headphones=false, music=false, musicFailed=false, sky='', skyChangedAt=0, cabin=createCabin(), rendered='', lastTick=performance.now(), audioFailed=false, voice=null, noticeUntil=8, sipUntil=-1, controlsUntil=0, pageEffect=null, bookTurningUntil=0;
