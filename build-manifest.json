@@ -1,0 +1,297 @@
+[
+  {
+    "path": "LICENSE",
+    "bytes": 681,
+    "sha256": "5f4a3c5e7fdceb8b1b96393dfb3c54bcef4b488cc74a2ae14200870d3e172a67"
+  },
+  {
+    "path": "THIRD_PARTY_NOTICES.md",
+    "bytes": 2337,
+    "sha256": "583e08367f0af443f28dcffefdb0b209b868e1dde114bf9c67b1ac37abc2e988"
+  },
+  {
+    "path": "_headers",
+    "bytes": 118,
+    "sha256": "7712db3c8acc3821e175d3b62d123ad8e33ced9bba69a721c6511a4a5ef9bd94"
+  },
+  {
+    "path": "assets/audio/announcements/blue-hour-bangkok-arrival.wav",
+    "bytes": 780108,
+    "sha256": "9688a917071835c05b745571f84e464b16f08a279a46b0f6222672eb3cc8f9f7"
+  },
+  {
+    "path": "assets/audio/announcements/blue-hour-bangkok-boarding.wav",
+    "bytes": 797482,
+    "sha256": "d138de88cdbf84b873c5d6f59a0ac37b46d338bf67a39e2a0635938d1dcd1f91"
+  },
+  {
+    "path": "assets/audio/announcements/blue-hour-captain.wav",
+    "bytes": 253260,
+    "sha256": "f6b1108fca0a7df9434632be3805bce37b5b6b751d841e14471f6327dbb0a970"
+  },
+  {
+    "path": "assets/audio/announcements/blue-hour-paris-arrival.wav",
+    "bytes": 771308,
+    "sha256": "7c68b3c3f2eef37acfc6176042d5d30933075a9677df4750c4409a7e86d4debb"
+  },
+  {
+    "path": "assets/audio/announcements/blue-hour-paris-boarding.wav",
+    "bytes": 793386,
+    "sha256": "3dc2cb9de35d4f27c4e08b9d3134f87e41001a6288f8bfcfc2cfb2d0cc805cef"
+  },
+  {
+    "path": "assets/audio/announcements/blue-hour-tokyo-arrival.wav",
+    "bytes": 778540,
+    "sha256": "1e41609186542de18e9af7c30444f1d23222a2950d2e1e128fe58cdce0144bca"
+  },
+  {
+    "path": "assets/audio/announcements/blue-hour-tokyo-boarding.wav",
+    "bytes": 794954,
+    "sha256": "f10786ac219c29f70bd878f7518420c7b2119158f8abefadb648d74db8dd0636"
+  },
+  {
+    "path": "assets/audio/announcements/cloudline-bangkok-arrival.wav",
+    "bytes": 789228,
+    "sha256": "cfe9ae594b733c2a88548df9aa34f5d5866bca0997037d58d480000a0a6be678"
+  },
+  {
+    "path": "assets/audio/announcements/cloudline-bangkok-boarding.wav",
+    "bytes": 824362,
+    "sha256": "3feff2e35c1aaa9b2832a7e8bcda01a45aaa11cfc230fb560f35ef69b5cac115"
+  },
+  {
+    "path": "assets/audio/announcements/cloudline-captain.wav",
+    "bytes": 233452,
+    "sha256": "1199bb26990fe6a0456c052f38e37e7111349abda36556323e12cf023e0f27a1"
+  },
+  {
+    "path": "assets/audio/announcements/cloudline-paris-arrival.wav",
+    "bytes": 784108,
+    "sha256": "91557791eb900d0dca413a62d10fa71ba5365df29e7c47ccac097bb7c5299549"
+  },
+  {
+    "path": "assets/audio/announcements/cloudline-paris-boarding.wav",
+    "bytes": 820202,
+    "sha256": "e9b8c326cdd68dc74930ef1c802fbef7b4926438b2cc390f11e34c0b98b0e86e"
+  },
+  {
+    "path": "assets/audio/announcements/cloudline-tokyo-arrival.wav",
+    "bytes": 791884,
+    "sha256": "9e22e5cdafb6e9d463599d2c411875e76083d5efcdac9ffae0fc04261a9210cd"
+  },
+  {
+    "path": "assets/audio/announcements/cloudline-tokyo-boarding.wav",
+    "bytes": 824906,
+    "sha256": "1ff15cc9d6eab85837743308106cb387f9c798520398c05264d071a83807e18b"
+  },
+  {
+    "path": "assets/audio/cabin-recording-loop.wav",
+    "bytes": 1736976,
+    "sha256": "e84fa83921ba2ae5c5401189f477be11623a13c62c494c1916df22ab809b76a8"
+  },
+  {
+    "path": "assets/audio/landing-roll.wav",
+    "bytes": 384044,
+    "sha256": "35e4d8e527c5811ee71e65d350d935d4158ff10b8a9b92f4c47ccd051ef3258b"
+  },
+  {
+    "path": "assets/audio/lounge-original.wav",
+    "bytes": 9216044,
+    "sha256": "2e42cff9e7bd21d5b742c70fa9fc665242fda78103c093b7c6a77d06b19437c8"
+  },
+  {
+    "path": "assets/audio/page-turn.wav",
+    "bytes": 103888,
+    "sha256": "33d39f160d72384bd4e5fe0c939b28fd6ea8c6bf6e110d1b82c04a0b64454663"
+  },
+  {
+    "path": "assets/audio/samples/licenses/Apache-2.0.txt",
+    "bytes": 11358,
+    "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+  },
+  {
+    "path": "assets/audio/samples/licenses/Kokoro-model-card.md",
+    "bytes": 6348,
+    "sha256": "91dcabced89db6f109b8786642f50402d3ee87450e8189589b6f85520e7f4d78"
+  },
+  {
+    "path": "assets/audio/samples/licenses/kokoro-onnx-MIT.txt",
+    "bytes": 1080,
+    "sha256": "f61fdd0217de9ece8fa699912848d91187d84879fc2e689f0906d0c1299e955e"
+  },
+  {
+    "path": "assets/audio/takeoff-roll.wav",
+    "bytes": 576044,
+    "sha256": "364d2df6889ff68f57e90c1610d6d85ac17b82d75913c3571dbc17afdd8e4e58"
+  },
+  {
+    "path": "assets/bangkok-map-v36.svg",
+    "bytes": 20220,
+    "sha256": "6a3cf54887ecb5891e28e278d8746ecd193e3ae8beb2fe4a76ad94eaa14bd829"
+  },
+  {
+    "path": "assets/business-seat-v38.png",
+    "bytes": 2236458,
+    "sha256": "3ac8f7caa8cc1dbdeceb6e7fb4f6472639e1ed6005a5b4415e151fd4c1f1daab"
+  },
+  {
+    "path": "assets/business-table-v38.png",
+    "bytes": 2434951,
+    "sha256": "265ac60e6c55f3e3eb0fe4cd941e0d83c32db54019026d4a422b7a3976814dda"
+  },
+  {
+    "path": "assets/business-window-v38.png",
+    "bytes": 2043529,
+    "sha256": "ad4ed901b55fbfc31c7824ac4eb14a236905edfdf6873b5c5824fedadb9e80b7"
+  },
+  {
+    "path": "assets/cabin-ground-v3.png",
+    "bytes": 2742588,
+    "sha256": "31931554561181aed983569196689542f01103137cb07426ee488c294ec1a57f"
+  },
+  {
+    "path": "assets/cabin-seat-v32.png",
+    "bytes": 2599929,
+    "sha256": "cbb313b82ff06eac5de6dce123150b8e47e61275cca0d973c61c4c88050bf47e"
+  },
+  {
+    "path": "assets/cabin-table-v29.png",
+    "bytes": 2815668,
+    "sha256": "cc18012558c4b783ac814993595710a9d82cc6df747c2b1c4e6d965cf87113dc"
+  },
+  {
+    "path": "assets/cabin-window-v3.png",
+    "bytes": 2992590,
+    "sha256": "b507413bd1b2c1f8fc7ac98f51e5300e946bc63ff3bbd99e7fde3e5888c4548d"
+  },
+  {
+    "path": "assets/champagne-v38.png",
+    "bytes": 2271261,
+    "sha256": "5e1eb681bb475028c3ba400eaa048103702a3cd2eccfaeadca449ef27550c255"
+  },
+  {
+    "path": "assets/clouds-photo-v5.jpg",
+    "bytes": 2827967,
+    "sha256": "4bab7d410494b2fe4442b319289f58a92eb640270d33e06a49261ffe7b1b3827"
+  },
+  {
+    "path": "assets/coffee-v17.png",
+    "bytes": 1900333,
+    "sha256": "5ae01fad6a75dcaed7c7851907153742cce9a967263cf4e5494b764835b46ceb"
+  },
+  {
+    "path": "assets/cursor-arrow-v24.svg",
+    "bytes": 215,
+    "sha256": "ebf9f1ce568133e05c86facb5ab2c766a37365ee6349a6d5b68ad23d49fa03e8"
+  },
+  {
+    "path": "assets/cursor-hand-v24.svg",
+    "bytes": 397,
+    "sha256": "d39dd572baea2c3fa0bf8db5357e3119e035ae6bff51383e873962d6ee942529"
+  },
+  {
+    "path": "assets/east-asia-map-v22.svg",
+    "bytes": 13756,
+    "sha256": "207c8fee0b2e2f6442b58b27389f2dc96822c18dca5e3d27882b3841d424845a"
+  },
+  {
+    "path": "assets/fonts/OFL.txt",
+    "bytes": 4376,
+    "sha256": "377f4f9c19e935228552478eb68cc2ed82910988a60ba60e2ac73b09f32d02d1"
+  },
+  {
+    "path": "assets/fonts/PatrickHand-Regular.ttf",
+    "bytes": 214772,
+    "sha256": "0f173b3e6cb6d1af25babf7f0057c5ac4ee11f9992b0469bb817e967ef4ad0fc"
+  },
+  {
+    "path": "assets/fonts/SourceSans3-OFL.txt",
+    "bytes": 4579,
+    "sha256": "09746787287a289323b0ec3cff4d1a4a801331b82b7207c1e186f5d26619a392"
+  },
+  {
+    "path": "assets/fonts/SourceSans3.ttf",
+    "bytes": 646340,
+    "sha256": "042fe2cc0b933e328410d7acbd0aa6a1873dca5aef81875f4bc214b08825c7b9"
+  },
+  {
+    "path": "assets/hands-book-v8.png",
+    "bytes": 1768295,
+    "sha256": "7e65328a349ead00a9eb9331fd498f7dafdfba47e4cc7a7f648ff040a8f7afc7"
+  },
+  {
+    "path": "assets/juice-v17.png",
+    "bytes": 1924819,
+    "sha256": "79188396f0504c220173bf1abfe66d68fb983a4702231dc1fa647c5b8d5fd638"
+  },
+  {
+    "path": "assets/paris-map-v36.svg",
+    "bytes": 71243,
+    "sha256": "1577995f8ead8e6aad11420e4dd79c9554aa02e85552ce755c5d924d66279fb2"
+  },
+  {
+    "path": "assets/red-wine-v38.png",
+    "bytes": 2838764,
+    "sha256": "48eb7b39436ffeb7c7c47c0425c71b59cb81b499aad8962ddcabba65c6bcfd7b"
+  },
+  {
+    "path": "assets/sky-sunset-v15.jpg",
+    "bytes": 305250,
+    "sha256": "5bdbf05f6b16ac8c8a571fbb93456223cd54d9603a3f91634ecc288286b6a6c8"
+  },
+  {
+    "path": "assets/terminal-v20.png",
+    "bytes": 3185360,
+    "sha256": "85efc0be1f72352b02f73fcc62c906b5e4ac9773e6a98003f79c7aa07a8f12be"
+  },
+  {
+    "path": "assets/terminal-v9.svg",
+    "bytes": 2657,
+    "sha256": "187d1c90432e48ee403ebc372b8b46c5fc07a7d6e37af94b040ff1ca0a625ab1"
+  },
+  {
+    "path": "assets/water-v17.png",
+    "bytes": 2179128,
+    "sha256": "a73fa4770d95a28175a4b8c01799f4dc802a1164ebf4b9ead66c52d8f334ecca"
+  },
+  {
+    "path": "assets/white-wine-v38.png",
+    "bytes": 2796930,
+    "sha256": "2f74a2a2a19f61b1d84530cd871e334a4ddfbb1d96f3dfedd603c7057fd73d64"
+  },
+  {
+    "path": "index.html",
+    "bytes": 15624,
+    "sha256": "86917d143ca158f2b92359f5b63b4503a302b679b2c66a77b63244bd1c716667"
+  },
+  {
+    "path": "src/announcement-timing.js",
+    "bytes": 426,
+    "sha256": "318835432322895f4fd11318fd386d6dc9e7dbc17f68346f6f6b97869f7505dc"
+  },
+  {
+    "path": "src/app.js",
+    "bytes": 30340,
+    "sha256": "8c316a4b8558f5dd9a3393ad99b5f20c27ddc4768200a0b11bbb7af1e52cb918"
+  },
+  {
+    "path": "src/audio.js",
+    "bytes": 5520,
+    "sha256": "7f4c2e95a818e819c446c2b0bd9eeed4a95a429a33f574cada59992a5514cbb7"
+  },
+  {
+    "path": "src/cabin.js",
+    "bytes": 1945,
+    "sha256": "d787cbdd537cc410b694defb798eb0c9a13930e88290bcdb6332e0de4b6c4f4e"
+  },
+  {
+    "path": "src/flight.js",
+    "bytes": 6946,
+    "sha256": "f1c29b96a0a8bdb0d26dd1f892f41009e7381cce403014cc1ab86cee70ff6075"
+  },
+  {
+    "path": "src/styles.css",
+    "bytes": 77472,
+    "sha256": "75d4bef795af416f37b121c62c5e1177aee3640499a454cfdbe2e55500925aef"
+  }
+]

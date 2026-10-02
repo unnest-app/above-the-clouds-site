@@ -1,0 +1,899 @@
+@font-face { font-family: Patrick; src: url("/above-the-clouds-site/assets/fonts/PatrickHand-Regular.ttf") format("truetype"); font-display: swap; }
+:root { font-family: Patrick, "Trebuchet MS", sans-serif; color: rgb(49, 55, 47); background: rgb(238, 229, 210); --paper: #faf6e9; --ink: #31372f; }
+* { box-sizing: border-box; }
+body { margin: 0px; isolation: isolate; min-height: 100svh; font-size: 20px; }
+body::before, .ground-view { content: ""; position: fixed; inset: 0px; z-index: -1; pointer-events: none; background: url("/above-the-clouds-site/assets/cabin-window-v3.png") center center / cover no-repeat; transition: transform 0.9s, filter 2s; }
+body::before { filter: var(--tone,none); }
+.ground-view { background-image: url("/above-the-clouds-site/assets/cabin-ground-v3.png"); opacity: 0; filter: var(--tone,none); }
+body[data-scene="boarding"] .ground-view { opacity: 1; }
+body[data-scene="takeoff"] .ground-view { opacity: calc(1 - var(--lift,0)); }
+body[data-view="window"]::before, body[data-view="window"] .ground-view { transform: scale(1.18); transform-origin: 40% 43%; }
+body[data-route="bangkok"] { --tone: brightness(.65) saturate(.75) hue-rotate(12deg); }
+body[data-route="paris"] { --tone: brightness(1.07) saturate(.65); }
+body.dim::before, body.dim .ground-view { filter: var(--tone,brightness(1)) brightness(.85); }
+body[data-airline="blue-hour"]::before { filter: var(--tone,brightness(1)) saturate(.8); }
+[hidden] { display: none !important; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; border: 0px; }
+button, input, select, a { -webkit-tap-highlight-color: transparent; }
+button, select { font: inherit; color: inherit; }
+button { cursor: pointer; border: 1.5px solid var(--ink); background: var(--paper); border-radius: 3px; padding: 8px 16px; transition: background 0.15s, transform 0.15s; }
+button:hover { background: rgb(236, 219, 186); }
+button:active { transform: translateY(1px); }
+button:disabled { opacity: 0.3; cursor: default; }
+button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible { outline: rgb(164, 64, 52) dashed 3px; outline-offset: 4px; }
+button[aria-pressed="true"] { background: rgb(236, 214, 179); }
+.primary { background: rgb(231, 191, 142); border: 2px solid var(--ink); box-shadow: rgba(49, 55, 47, 0.208) 2px 3px; }
+.masthead { position: absolute; top: 25px; left: 34px; z-index: 3; }
+.brand { font-size: 26px; text-decoration: none; color: inherit; background: var(--paper); padding: 4px 12px; border: 1.5px solid var(--ink); display: block; transform: rotate(-3deg); }
+body[data-scene] .masthead { display: none; }
+.departure, .journey { min-height: 100svh; position: relative; }
+.departure { display: flex; align-items: center; justify-content: flex-end; padding: 100px 7% 60px; }
+.terminal-board { width: 450px; max-width: 100%; background: var(--paper); padding: 27px 30px 20px; border: 2px solid var(--ink); box-shadow: rgba(49, 55, 47, 0.208) 5px 6px; transform: rotate(1deg); }
+.eyebrow { font-size: 14px; margin: 0px; letter-spacing: 0.04em; }
+h1 { font-weight: 400; line-height: 1.1; }
+.terminal-board h1 { font-size: 36px; margin: 9px 0px 22px; }
+.flight-list { border: 0px; margin: 0px; padding: 0px; }
+.flight-list legend { font-size: 14px; color: rgb(103, 106, 94); margin-bottom: 8px; }
+.flight-list label { display: flex; align-items: center; gap: 12px; padding: 11px 9px; border-bottom: 1px dashed rgb(183, 179, 166); cursor: pointer; }
+.flight-list label:has(input:checked) { background: rgb(233, 219, 192); }
+.flight-list input { accent-color: rgb(108, 112, 94); margin: 0px; width: 17px; height: 17px; }
+.flight-list span { flex: 1 1 0%; }
+.flight-list strong { display: block; font-weight: 400; font-size: 25px; line-height: 1.1; }
+.flight-list small { display: block; font-size: 14px; color: rgb(104, 105, 94); }
+.flight-list b { font-size: 18px; font-weight: 400; white-space: nowrap; }
+.airline-row { display: flex; align-items: center; gap: 9px; margin: 18px 0px; font-size: 17px; }
+.airline-row select { min-width: 0px; flex: 1 1 0%; border-width: 0px 0px 1px; border-style: none none solid; border-color: currentcolor currentcolor rgb(140, 142, 126); border-image: none; background: transparent; font-size: 17px; padding: 4px; }
+.airline-row button { padding: 3px 9px; }
+.ticket-details { border-block: 1px dashed rgb(166, 163, 150); padding: 12px 0px; font-size: 17px; }
+.boarding-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-top: 18px; }
+.sound-choice { font-size: 16px; display: flex; align-items: center; gap: 6px; }
+.sound-choice input { accent-color: rgb(103, 109, 91); width: 17px; height: 17px; }
+.proposal-note { font-size: 14px; color: rgb(116, 117, 104); margin: 16px 0px 0px; min-height: 20px; }
+.cabin { position: absolute; inset: 0px; }
+.airplane-window { position: absolute; left: 15%; top: 3%; width: 42%; height: 77%; border: 0px; background: transparent; border-radius: 32%; padding: 0px; }
+.airplane-window:hover { background: rgba(255, 239, 190, 0.04); }
+.airplane-window[aria-pressed="true"] { background: transparent; }
+.view-back { position: absolute; left: 25px; top: 25px; font-size: 17px; background: rgba(250, 246, 233, 0.745); border: 0px; }
+.belt-sign { position: absolute; top: 28px; right: 30px; font-size: 11px; color: rgb(175, 110, 62); }
+.pocket { position: absolute; right: 2%; top: 73%; border: 0px; background: rgba(250, 246, 233, 0.467); font-size: 25px; width: 44px; height: 44px; padding: 0px; }
+.tray-toggle { position: absolute; right: 2%; top: 54%; border: 0px; background: rgba(250, 246, 233, 0.376); width: 52px; height: 40px; padding: 0px; font-size: 30px; border-radius: 8px; }
+.object-hint { position: absolute; right: 58px; top: 9px; font-size: 17px; opacity: 0; pointer-events: none; }
+.tray-toggle:hover .object-hint, .tray-toggle:focus-visible .object-hint { opacity: 1; }
+.tray { position: absolute; right: 5%; bottom: 15%; width: 300px; padding: 28px 18px 17px; background: rgb(227, 218, 201); border: 2px solid rgb(87, 93, 85); border-radius: 12px 12px 24px 24px; box-shadow: rgba(34, 42, 35, 0.145) 0px 14px 20px; text-align: center; animation: 0.3s ease-out 0s 1 normal none running tray-in; }
+.tray-close { position: absolute; right: 8px; top: 4px; padding: 0px 8px; font-size: 23px; border: 0px; background: transparent; }
+.tray p { font-size: 17px; margin: 4px 0px 12px; }
+#drinks { display: flex; gap: 5px; justify-content: center; }
+#drinks button { flex: 1 1 0%; font-size: 18px; padding: 8px 5px; background: transparent; border-color: transparent; }
+#drinks button::before { content: ""; display: block; width: 32px; height: 39px; margin: 3px auto 8px; border: 1.5px solid var(--ink); border-radius: 3px 3px 10px 10px; background: linear-gradient(rgb(252, 248, 232) 12%, rgb(172, 197, 203) 12%); }
+#drinks button[data-drink="juice"]::before { background: linear-gradient(rgb(252, 248, 232) 12%, rgb(221, 169, 80) 12%); }
+#drinks button[data-drink="coffee"]::before { background: linear-gradient(rgb(252, 248, 232) 12%, rgb(139, 102, 80) 12%); }
+#drinks button:hover { border-color: rgb(133, 133, 121); background: rgb(249, 244, 227); }
+.cup { display: block; position: relative; width: 61px; height: 76px; border: 2px solid rgb(76, 81, 72); border-radius: 4px 4px 18px 18px; margin: 14px auto 8px; padding: 0px; background: linear-gradient(rgb(255, 250, 240) 12%, rgb(172, 197, 203) 12%); box-shadow: rgba(60, 58, 48, 0.125) 4px 7px 6px; }
+.cup[data-drink="juice"] { background: linear-gradient(rgb(255, 250, 240) 12%, rgb(221, 169, 80) 12%); }
+.cup[data-drink="coffee"] { background: linear-gradient(rgb(255, 250, 240) 12%, rgb(139, 102, 80) 12%); }
+.cup span { position: absolute; bottom: 7px; left: 0px; right: 0px; font-size: 15px; background: rgba(250, 246, 233, 0.627); }
+.cup.sipping { animation: 0.8s ease-in-out 0s 1 normal none running sip; }
+.journey-bottom { position: absolute; bottom: 22px; left: 50%; transform: translateX(-50%); z-index: 4; width: min(640px, 100% - 28px); text-align: center; display: flex; flex-direction: column; align-items: center; gap: 9px; }
+#announcement { margin: 0px 0px 12px; padding: 9px 16px; font-size: 19px; background: rgba(250, 246, 233, 0.87); border-radius: 4px; max-width: 100%; }
+.controls { display: flex; gap: 3px; align-items: center; background: rgba(250, 246, 233, 0.792); border-radius: 999px; padding: 3px 7px; backdrop-filter: blur(6px); }
+.controls button { border: 0px; background: transparent; font-size: 16px; padding: 6px 10px; border-radius: 999px; }
+.controls button:hover { background: rgba(219, 207, 185, 0.6); }
+#progress-toggle { font-variant-numeric: tabular-nums; font-size: 15px; }
+#flight-progress { display: flex; align-items: center; gap: 12px; font-size: 14px; background: rgba(250, 246, 233, 0.8); padding: 7px 13px; border-radius: 4px; max-width: 100%; }
+progress { width: 180px; max-width: 40vw; height: 4px; accent-color: rgb(114, 126, 109); }
+.pause-note { position: absolute; bottom: 132px; left: 50%; transform: translateX(-50%); margin: 0px; font-size: 17px; background: rgba(250, 246, 233, 0.79); padding: 6px 12px; z-index: 12; width: max-content; max-width: 90vw; }
+#sound-note { bottom: 175px; }
+dialog { font: 21px Patrick, "Trebuchet MS", sans-serif; color: var(--ink); background: var(--paper); border: 2px solid var(--ink); padding: 25px; width: min(480px, 100% - 32px); box-shadow: rgba(49, 55, 47, 0.208) 5px 6px; }
+dialog::backdrop { background: rgba(49, 55, 47, 0.314); }
+.dialog-top { display: flex; align-items: center; justify-content: space-between; gap: 15px; margin-bottom: 18px; }
+.dialog-top h2 { font-size: 28px; font-weight: 400; margin: 0px; }
+.dialog-top button { border: 0px; background: transparent; padding: 0px 8px; font-size: 25px; }
+.boarding-ticket { border: 1px dashed rgb(133, 133, 121); padding: 18px; }
+.boarding-ticket p { font-size: 17px; margin: 0px; }
+.boarding-ticket h3 { font-size: 38px; font-weight: 400; margin: 5px 0px 15px; }
+dl { display: flex; justify-content: space-between; gap: 15px; margin: 0px; }
+dt { font-size: 14px; }
+dd { font-size: 18px; margin: 0px; }
+.credits { font-family: system-ui, sans-serif; font-size: 12px; line-height: 1.5; margin-top: 24px; }
+.credits a { color: inherit; }
+.complete-screen { min-height: 100svh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 40px; color: rgb(238, 230, 212); }
+.complete-screen h1 { font-size: 42px; margin: 25px 0px 12px; }
+.complete-screen p { font-size: 20px; }
+.complete-screen .eyebrow { font-size: 14px; }
+body::after { content: ""; position: fixed; inset: 0px; background: rgb(23, 30, 34); opacity: var(--fade,0); pointer-events: none; z-index: 10; }
+body[data-scene="closing"] .journey-bottom { z-index: 11; }
+body[data-scene="complete"] { background: rgb(23, 30, 34); }
+body[data-scene="complete"]::before, body[data-scene="complete"]::after, body[data-scene="complete"] .ground-view { display: none; }
+@keyframes tray-in {
+  0% { transform: translateY(12px); opacity: 0; }
+  100% { transform: none; opacity: 1; }
+}
+@keyframes sip {
+  50% { transform: translateY(-12px) rotate(-9deg); }
+}
+@media (max-width: 760px) {
+  .masthead { top: 18px; left: 18px; }
+  .brand { font-size: 23px; }
+  .departure { padding: 85px 18px 25px; justify-content: center; align-items: center; }
+  .terminal-board { padding: 21px 20px; width: 360px; transform: none; }
+  .terminal-board h1 { font-size: 32px; margin-bottom: 17px; }
+  .flight-list label { padding: 10px 7px; }
+  .flight-list strong { font-size: 24px; }
+  .flight-list small { font-size: 13px; }
+  .airline-row { gap: 6px; font-size: 15px; }
+  .airline-row select { font-size: 15px; }
+  .boarding-row .primary { font-size: 19px; padding: 8px 12px; }
+  .sound-choice { font-size: 14px; }
+  .ticket-details { font-size: 15px; }
+  body::before, .ground-view { background-position: 36% center; }
+  .airplane-window { left: 2%; top: 5%; width: 88%; height: 72%; }
+  .tray-toggle { top: auto; bottom: 23%; right: 16px; }
+  .pocket { top: auto; bottom: 15%; right: 20px; }
+  .belt-sign { top: 20px; right: 20px; }
+  .tray { right: 50%; transform: translateX(50%); bottom: 19%; width: 280px; }
+  .controls { gap: 0px; padding: 3px 5px; }
+  .controls button { font-size: 14px; padding: 7px 8px; }
+  #progress-toggle { font-size: 13px; padding: 7px 5px; }
+  .journey-bottom { bottom: 18px; width: calc(100% - 24px); }
+  #announcement { font-size: 17px; }
+  .complete-screen h1 { font-size: 35px; }
+  .view-back { left: 15px; top: 18px; }
+  .tray { animation: auto ease 0s 1 normal none running none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after { animation: auto ease 0s 1 normal none running none !important; transition: none !important; }
+}
+body:not([data-scene]) .ground-view { opacity: 1; }
+.complete-screen button { color: var(--ink); }
+main { position: relative; z-index: 1; }
+.window-motion { position: fixed; left: 50%; top: 50%; width: max(100vw, 177.683svh); height: max(56.281vw, 100svh); transform: translate(-50%, -50%); z-index: -1; pointer-events: none; opacity: 0; filter: var(--tone,none); transition: opacity 1.5s, scale 0.9s; transform-origin: 40% 43%; }
+body[data-scene="takeoff"] .window-motion { opacity: var(--lift,0); }
+body[data-scene="cruise"] .window-motion, body[data-scene="closing"] .window-motion { opacity: 1; }
+.cloud-far { transform: translateX(var(--cloud-far,0px)); }
+.cloud-near { opacity: 1; transform: translateX(var(--cloud-near,0px)) translateY(-100px); }
+.sky-layer { position: fixed; inset: 0px; z-index: -1; pointer-events: none; transition: transform 0.9s; transform-origin: 40% 43%; }
+body[data-view="window"] .sky-layer { transform: scale(1.18); }
+.table-view { position: fixed; inset: 0px; background: url("/above-the-clouds-site/assets/cabin-table-v29.png") center center / cover no-repeat; pointer-events: none; opacity: 0; z-index: -1; transition: opacity 0.65s, filter 1s; filter: var(--tone,none); }
+body[data-view="table"] .table-view { opacity: 1; }
+body[data-view="table"] .airplane-window { pointer-events: none; }
+body[data-view="rest"]::before, body[data-view="rest"] .ground-view { transform: scale(1.025); transform-origin: 45% 45%; }
+.cabin-shade { position: fixed; inset: 0px; z-index: 0; pointer-events: none; background: radial-gradient(at 34% 30%, rgba(21, 29, 37, 0.03) 5%, rgba(21, 29, 37, 0.22) 45%, rgba(21, 29, 37, 0.66) 95%); opacity: 0; transition: opacity 1.2s; }
+body.dim .cabin-shade { opacity: 1; }
+body.dim::before, body.dim .ground-view { filter: var(--tone,none); }
+body.dim .table-view { filter: var(--tone,brightness(1)) brightness(.5); }
+body.dim.reading-lit .table-view { filter: var(--tone,brightness(1)) brightness(.7); }
+.rest-toggle, .cabin-light { position: absolute; right: 22px; top: 80px; width: 40px; height: 40px; padding: 0px; border: 0px; background: rgba(250, 246, 233, 0.44); border-radius: 50%; font-size: 23px; }
+.cabin-light { top: 130px; }
+.rest-toggle[aria-pressed="true"], .cabin-light[aria-pressed="true"] { background: rgba(230, 201, 137, 0.66); }
+.wake-rest { position: absolute; inset: 0px; width: 100%; height: 100%; padding: 0px; border: 0px; z-index: 0; background: transparent !important; }
+.wake-rest:hover { background: transparent; transform: none; }
+body[data-view="rest"] .airplane-window, body[data-view="rest"] .tray-toggle, body[data-view="rest"] .pocket { display: none; }
+body[data-view="table"] .tray { right: 9%; bottom: 16%; width: min(65vw, 860px); height: 42svh; max-height: 390px; padding: 0px; border: 0px; background: transparent; box-shadow: none; border-radius: 0px; animation: auto ease 0s 1 normal none running none; transform: none; }
+body[data-view="table"] .tray-close { top: -20px; right: -4px; z-index: 4; background: rgba(250, 246, 233, 0.48); border-radius: 50%; font-size: 25px; }
+.table-tools { display: flex; justify-content: center; align-items: center; gap: 35px; margin-top: 22px; }
+.book { display: grid; grid-template-columns: 1fr 1fr; position: relative; width: 100%; min-height: 250px; border-radius: 5px 12px 12px 5px; background: rgb(250, 242, 222); box-shadow: rgba(38, 43, 38, 0.24) 0px 10px 20px, rgb(199, 186, 162) 2px 4px; border: 1px solid rgb(135, 126, 109); transform: rotate(-1deg); transition: filter 0.7s; }
+.book::after { content: ""; position: absolute; left: 49%; top: 0px; bottom: 0px; width: 2%; background: linear-gradient(90deg, transparent, rgba(118, 104, 80, 0.133), transparent); pointer-events: none; }
+.book-left, .book-right { padding: 24px 25px 18px; text-align: left; }
+.book-left { background: linear-gradient(90deg, rgb(255, 247, 232), rgb(233, 221, 196)); border-radius: 5px 0px 0px 5px; display: flex; flex-direction: column; justify-content: center; }
+.book-left h2 { font: 32px Patrick; margin: 18px 0px; color: rgb(82, 105, 89); }
+.book-left > span { font-size: 35px; color: rgb(116, 141, 135); }
+.book-left .eyebrow { font-size: 13px; }
+.book-right h3 { font-size: 23px; font-weight: 400; margin: 0px 0px 14px; }
+.book-right > p { font: 16px / 1.6 Georgia, serif; margin: 0px 0px 18px; color: rgb(68, 76, 66); }
+.page-controls { display: flex; justify-content: space-between; align-items: center; font-size: 14px; }
+.page-controls button { padding: 0px 8px; background: transparent; border: 0px; font-size: 24px; }
+.reading-controls { display: flex; justify-content: center; gap: 12px; margin-top: 16px; }
+.reading-controls button { font-size: 16px; padding: 4px 10px; background: rgba(250, 246, 233, 0.69); border: 0px; border-radius: 20px; }
+.tray.reading #drinks, .tray.reading #service-note, .tray.reading #sip-note, .tray.reading .table-tools { display: none !important; }
+.tray.reading .cup { position: absolute; right: -5%; top: -60px; z-index: 3; scale: 0.8; margin: 0px; transform: rotate(5deg); }
+body.dim:not(.reading-lit) .book { filter: brightness(0.56); }
+body.dim.reading-lit .book { filter: none; box-shadow: rgba(255, 217, 148, 0.19) 0px 0px 65px, rgba(38, 43, 38, 0.24) 0px 10px 20px; }
+.quiet-rest .journey-bottom, .quiet-rest .view-back, .quiet-rest .rest-toggle, .quiet-rest .cabin-light, .quiet-rest .belt-sign { opacity: 0; pointer-events: none; }
+.journey-bottom, .view-back, .rest-toggle, .cabin-light { transition: opacity 0.6s; }
+.journey-bottom:focus-within { opacity: 1; pointer-events: auto; }
+.background-choice { display: flex; gap: 8px; align-items: center; font-size: 16px; margin-top: 24px; }
+.background-choice input { accent-color: rgb(101, 118, 94); }
+body[data-scene="complete"] .window-motion, body[data-scene="complete"] .table-view, body[data-scene="complete"] .cabin-shade { display: none; }
+@media (max-width: 760px) {
+  .window-motion { left: calc(50% + 24.8758svh - 14vw); }
+  .rest-toggle { right: 16px; top: 65px; }
+  .cabin-light { right: 16px; top: 115px; }
+  body[data-view="table"] .table-view { background-position: 60% center; }
+  body[data-view="table"] .tray { right: 16px; bottom: 20%; width: calc(100% - 32px); height: auto; max-height: none; }
+  .book { min-height: 260px; grid-template-columns: 30% 70%; }
+  .book-left { padding: 15px 10px; }
+  .book-left h2 { font-size: 23px; }
+  .book-left .eyebrow { font-size: 10px; }
+  .book-left > span { font-size: 25px; }
+  .book-right { padding: 20px 15px 12px; }
+  .book-right h3 { font-size: 20px; }
+  .book-right > p { font-size: 15px; line-height: 1.55; }
+  .tray.reading .cup { top: -80px; right: 3%; scale: 0.7; }
+  .table-tools { margin-top: 18px; }
+  .reading-controls { gap: 8px; }
+  .reading-controls button { font-size: 14px; }
+  .view-back { font-size: 16px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cloud-far, .cloud-near { transform: none !important; }
+}
+body[data-scene="closing"] main { z-index: 11; }
+body[data-scene="closing"] .cabin { visibility: hidden; }
+body[data-view="rest"] .sky-layer { transform: scale(1.025); transform-origin: 45% 45%; }
+.table-motion { position: fixed; left: 50%; top: 50%; width: max(100vw, 177.683svh); height: max(56.281vw, 100svh); transform: translate(-50%, -50%); z-index: -1; pointer-events: none; opacity: 0; filter: var(--tone,none); transition: opacity 0.65s; }
+body[data-view="table"] .table-motion { opacity: 1; }
+body.dim .table-motion { filter: var(--tone,brightness(1)) brightness(.5); }
+body.dim.reading-lit .table-motion { filter: var(--tone,brightness(1)) brightness(.7); }
+body[data-scene="complete"] .table-motion { display: none; }
+@media (max-width: 760px) {
+  .table-motion { left: calc(50% - 17.7684svh + 10vw); }
+}
+.cloud-photo { transform: translateX(var(--cloud-photo,0px)); filter: saturate(0.64) contrast(1.08); }
+.view-navigation { position: absolute; inset: 0px; pointer-events: none; }
+.view-navigation button { position: absolute; top: 46%; border: 0px; background: rgba(250, 246, 233, 0.737); border-radius: 20px; pointer-events: auto; font-size: 25px; padding: 4px 10px; box-shadow: rgba(39, 54, 45, 0.07) 0px 2px 7px; }
+.view-navigation span { font-size: 16px; vertical-align: middle; }
+.look-left { left: 18px; }
+.look-right { right: 18px; }
+.quiet-rest .view-navigation { display: none; }
+.controls { view-transition-name: flight-controls; }
+::view-transition-old(root), ::view-transition-new(root) { animation-duration: 0.65s; animation-timing-function: cubic-bezier(0.2, 0.7, 0.2, 1); mix-blend-mode: normal; }
+::view-transition-old(root) { animation-name: look-out-right; }
+::view-transition-new(root) { animation-name: look-in-right; }
+html:has(body[data-look-direction="left"])::view-transition-old(root) { animation-name: look-out-left; }
+html:has(body[data-look-direction="left"])::view-transition-new(root) { animation-name: look-in-left; }
+::view-transition-old(flight-controls), ::view-transition-new(flight-controls) { animation: auto ease 0s 1 normal none running none; mix-blend-mode: normal; }
+@keyframes look-out-right {
+  100% { transform: translateX(-18%); opacity: 0; }
+}
+@keyframes look-in-right {
+  0% { transform: translateX(18%); opacity: 0; }
+}
+@keyframes look-out-left {
+  100% { transform: translateX(18%); opacity: 0; }
+}
+@keyframes look-in-left {
+  0% { transform: translateX(-18%); opacity: 0; }
+}
+@media (max-width: 760px) {
+  .look-left { left: 10px; }
+  .look-right { right: 10px; }
+  .view-navigation button { top: 34%; font-size: 23px; padding: 4px 8px; }
+  .view-navigation span { font-size: 14px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cloud-photo { transform: none !important; }
+  ::view-transition-old(root), ::view-transition-new(root) { animation: auto ease 0s 1 normal none running none !important; }
+}
+body[data-view-motion="slide"]::before, body[data-view-motion="slide"] .ground-view, body[data-view-motion="slide"] .sky-layer { transition: filter 1s; }
+body[data-view-motion="slide"] .table-view, body[data-view-motion="slide"] .table-motion { transition: filter 1s; }
+.reading-scene { position: fixed; left: 58%; bottom: 11%; width: min(52vw, 68svh, 580px); aspect-ratio: 623 / 631; transform: translateX(-50%); background: url("/above-the-clouds-site/assets/hands-book-v8.png") 0px 0px / 200% 200% no-repeat; pointer-events: none; filter: saturate(0.7) drop-shadow(rgba(28, 43, 36, 0.19) 0px 9px 8px); }
+.reading-scene.turning { animation: 1.8s step-end 0s 1 normal none running hand-page-turn; }
+@keyframes hand-page-turn {
+  0% { background-position: 0px 0px; }
+  18% { background-position: 100% 0px; }
+  43% { background-position: 0px 100%; }
+  72% { background-position: 100% 100%; }
+  100% { background-position: 0px 0px; }
+}
+body.dim .reading-scene { filter: saturate(0.7) brightness(0.9) drop-shadow(rgba(28, 43, 36, 0.25) 0px 9px 8px); }
+@media (max-width: 760px) {
+  .reading-scene { left: 50%; bottom: 12%; width: min(76vw, 58svh, 430px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .reading-scene.turning { animation: auto ease 0s 1 normal none running none !important; }
+}
+.reading-scene:focus { outline: none; }
+.reading-scene-active .tray-toggle, .reading-scene-active .pocket { display: none; }
+body[data-view="table"] .tray.reading { height: auto; max-height: none; bottom: 15%; }
+.book-close { position: fixed; left: 50%; bottom: 20%; transform: translateX(-50%); z-index: 12; padding: 6px 12px; font-size: 12px; background: rgba(244, 236, 220, 0.8); border: 1px solid rgba(89, 97, 87, 0.4); border-radius: 3px; }
+@font-face { font-family: SourceSans; src: url("/above-the-clouds-site/assets/fonts/SourceSans3.ttf") format("truetype"); font-weight: 200 900; font-display: swap; }
+:root { font-family: SourceSans, "Helvetica Neue", Arial, sans-serif; }
+.brand { font-family: Patrick, sans-serif; }
+body:not([data-scene])::before { background-image: url("/above-the-clouds-site/assets/terminal-v9.svg"); background-position: center center; filter: none; }
+body:not([data-scene]) .ground-view { display: none; }
+.terminal-board { transform: none; border: 1px solid rgb(75, 98, 86); border-radius: 3px; padding: 0px 28px 24px; box-shadow: rgba(39, 55, 42, 0.133) 0px 12px 32px; background: rgba(245, 240, 225, 0.96); width: 460px; }
+.terminal-board .eyebrow { display: flex; align-items: center; justify-content: space-between; margin: 0px -28px 25px; padding: 16px 28px; background: rgb(48, 77, 67); color: rgb(245, 237, 205); font-size: 18px; font-weight: 600; letter-spacing: 0.03em; }
+.gate-label { font-size: 13px; font-weight: 400; border-left: 1px solid rgba(183, 196, 179, 0.5); padding-left: 20px; }
+.terminal-board h1 { font-size: 31px; font-weight: 500; letter-spacing: -0.02em; margin: 0px 0px 22px; }
+.flight-list label { border-bottom: 1px solid rgba(183, 179, 166, 0.314); padding: 13px 8px; }
+.flight-list strong { font-size: 23px; font-weight: 600; }
+.flight-list small { font-size: 14px; }
+.flight-list b { font-size: 17px; font-variant-numeric: tabular-nums; }
+.flight-list label:has(input:checked) { background: rgb(223, 229, 217); box-shadow: rgb(72, 105, 89) 3px 0px inset; }
+.airline-row, .airline-row select { font-size: 16px; }
+.ticket-details { font-size: 15px; font-variant-numeric: tabular-nums; }
+.boarding-row .primary { font-size: 16px; font-weight: 600; background: rgb(48, 77, 67); color: rgb(245, 237, 205); border-color: rgb(48, 77, 67); box-shadow: none; }
+.boarding-row .primary:hover { background: rgb(71, 103, 90); }
+.proposal-note { font-size: 13px; }
+@media (max-width: 760px) {
+  .departure { padding: 92px 18px 30px; align-items: center; }
+  .terminal-board { width: 390px; padding: 0px 20px 20px; }
+  .terminal-board .eyebrow { margin: 0px -20px 22px; padding: 14px 20px; font-size: 17px; }
+  .terminal-board h1 { font-size: 28px; }
+  .flight-list strong { font-size: 22px; }
+  .flight-list small { font-size: 13px; }
+  .boarding-row .primary { font-size: 15px; padding: 10px 12px; }
+  body:not([data-scene])::before { background-position: 36% center; }
+}
+.departure { padding: 90px 7% 28px; }
+.terminal-board { padding-bottom: 20px; }
+.terminal-board .eyebrow { margin-bottom: 18px; padding-block: 14px; }
+.terminal-board h1 { margin-bottom: 16px; }
+.flight-list label { padding-block: 10px; }
+.airline-row { margin-block: 12px; }
+.ticket-details { padding-block: 10px; }
+@media (max-width: 760px) {
+  .departure { padding: 90px 18px 25px; }
+  .terminal-board .eyebrow { margin-bottom: 18px; }
+}
+body[data-view="window"]::before, body[data-view="window"] .ground-view { display: none; }
+body[data-view="window"] .sky-layer { transform: none; }
+body[data-view="window"] .window-motion { left: 50%; top: 50%; opacity: 1; transform: translate(-50%, -50%); }
+body[data-view="window"] .window-motion > g { clip-path: none; }
+body[data-view="window"] .airplane-window, body[data-view="window"] .pocket, body[data-view="window"] .tray-toggle, body[data-view="window"] .rest-toggle, body[data-view="window"] .cabin-light, body[data-view="window"] .belt-sign { display: none; }
+body:not([data-scene]) { background: rgb(230, 239, 244); }
+.terminal-board { background: rgba(247, 250, 251, 0.918); border-color: rgb(110, 137, 151); }
+.terminal-board .eyebrow { background: rgb(59, 97, 120); color: rgb(241, 246, 249); }
+.flight-list label:has(input:checked) { background: rgb(223, 234, 240); box-shadow: rgb(85, 124, 148) 3px 0px inset; }
+.boarding-row .primary { background: rgb(59, 97, 120); border-color: rgb(59, 97, 120); color: rgb(245, 249, 251); }
+.boarding-row .primary:hover { background: rgb(80, 118, 142); }
+.music-toggle { position: absolute; right: 22px; top: 180px; display: flex; align-items: center; gap: 7px; padding: 6px 11px; border: 0px; border-radius: 20px; background: rgba(250, 246, 233, 0.77); font-size: 14px; }
+.music-toggle > span:first-child { font-size: 21px; }
+.music-toggle[aria-pressed="true"] { background: rgba(226, 210, 175, 0.66); }
+.quiet-rest .music-toggle { opacity: 0; pointer-events: none; }
+body[data-view="window"] .music-toggle { display: none; }
+@media (max-width: 760px) {
+  .music-toggle { right: 16px; top: 165px; }
+}
+@media (max-width: 760px) and (max-height: 700px) {
+  .departure { padding: 78px 18px 18px; }
+  .terminal-board { padding-bottom: 15px; }
+  .terminal-board .eyebrow { padding-block: 12px; margin-bottom: 12px; }
+  .terminal-board h1 { font-size: 26px; margin-bottom: 12px; }
+  .flight-list label { padding-block: 8px; }
+  .boarding-row { margin-top: 12px; }
+  .proposal-note { margin-top: 12px; }
+  .airline-row { margin-block: 10px; }
+}
+.brand, .terminal-board { transform: none; }
+.brand { font-family: SourceSans, sans-serif; font-size: 22px; border: 0px; background: transparent; padding: 0px; font-weight: 500; }
+.primary { box-shadow: none; }
+.view-back, .tray-toggle, .rest-toggle, .tray-close { display: none !important; }
+.cabin-light { right: 130px; top: 22px; width: 36px; height: 36px; font-size: 21px; }
+.music-toggle { right: 22px; top: 22px; height: 36px; padding: 4px 11px; font-size: 13px; }
+.controls { border-radius: 6px; padding: 4px 7px; }
+.controls button { font-size: 14px; padding: 7px 10px; }
+#progress-toggle { font-size: 14px; }
+.view-navigation button { border-radius: 5px; padding: 5px 9px; font-size: 20px; box-shadow: none; }
+button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible { outline: rgb(113, 135, 126) solid 2px; outline-offset: 3px; }
+dialog { font: 18px SourceSans, "Helvetica Neue", sans-serif; border-width: 1px; border-radius: 5px; box-shadow: rgba(25, 42, 41, 0.25) 0px 15px 45px; max-height: calc(-40px + 100svh); overflow: auto; }
+.menu-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 20px; }
+.menu-actions button:last-child { grid-column: 1 / -1; }
+.menu-actions button { font-size: 16px; background: transparent; border-color: rgba(133, 145, 131, 0.44); }
+.dialog-top h2 { font-size: 25px; font-weight: 500; }
+.dialog-top button { font-size: 23px; }
+.background-choice { margin-top: 17px; }
+@media (max-width: 760px) {
+  .brand { font-size: 21px; }
+  .cabin-light { right: 116px; top: 20px; }
+  .music-toggle { right: 16px; top: 20px; }
+  .controls button, #progress-toggle { font-size: 13px; padding: 7px 9px; }
+}
+#exit-dialog { width: min(340px, 100% - 32px); padding: 22px 24px; background: rgb(247, 243, 232); }
+#exit-dialog .dialog-top { margin-bottom: 12px; }
+#exit-dialog .dialog-top h2 { font-size: 22px; }
+.menu-actions { display: flex; flex-direction: column; gap: 0px; margin: 0px 0px 8px; }
+.menu-actions button { width: 100%; border-width: 0px 0px 1px; border-style: none none solid; border-color: currentcolor currentcolor rgba(113, 135, 126, 0.145); border-image: none; border-radius: 0px; text-align: left; padding: 13px 0px; font-size: 16px; }
+.menu-actions button:hover { background: rgb(232, 233, 221); }
+.flight-settings { font-size: 15px; border-bottom: 1px solid rgba(113, 135, 126, 0.145); padding: 12px 0px; margin: 0px; }
+.flight-settings > summary { cursor: pointer; color: rgb(88, 104, 94); list-style: none; }
+.flight-settings > summary::after { content: "+"; float: right; }
+.flight-settings[open] > summary::after { content: "−"; }
+.flight-settings summary::-webkit-details-marker { display: none; }
+.flight-settings .background-choice { font-size: 14px; margin-top: 14px; line-height: 1.4; }
+.flight-settings .credits { margin: 17px 0px 4px; }
+.menu-end { display: flex; justify-content: space-between; gap: 16px; margin-top: 19px; }
+.menu-end button { border: 0px; background: transparent; padding: 4px 0px; font-size: 14px; color: rgb(101, 108, 96); }
+.menu-end #finish-now { color: rgb(129, 86, 73); }
+.menu-end button:hover { text-decoration: underline; background: transparent; }
+#sound-toggle[aria-pressed="true"] { background: rgb(219, 226, 211); border-radius: 4px; }
+#sound-toggle { border-radius: 0px; padding-inline: 12px; border-inline: 1px solid rgba(113, 135, 126, 0.145) !important; }
+body[data-sky="blue-hour"] .cloud-photo { filter: sepia(0.8) hue-rotate(165deg) saturate(0.7) brightness(0.52); }
+body[data-sky="sunset"] .cloud-photo { filter: saturate(0.68) contrast(1.03); }
+body[data-scene="boarding"]::after { content: ""; position: fixed; inset: 0px; z-index: 12; background: url("/above-the-clouds-site/assets/terminal-v9.svg") center center / cover no-repeat rgb(230, 239, 244); opacity: var(--boarding-veil,0); pointer-events: none; }
+@media (max-width: 760px) {
+  body[data-scene="boarding"]::after { background-position: 36% center; }
+}
+@media (prefers-reduced-motion: reduce) {
+  body[data-scene="boarding"]::after { display: none; }
+}
+.sky-current { opacity: var(--sky-mix,1); }
+body[data-scene="boarding"] .window-motion { opacity: 1; }
+body[data-scene="takeoff"] .window-motion { opacity: 1; }
+body[data-view="table"][data-scene="boarding"] .table-motion, body[data-view="table"][data-scene="takeoff"] .table-motion { opacity: 1; }
+body[data-sky="blue-hour"] .cloud-photo, body[data-sky="sunset"] .cloud-photo { filter: none; }
+body[data-sky="blue-hour"] .sky-current, body[data-previous-sky="blue-hour"] .sky-previous { filter: sepia(0.8) hue-rotate(165deg) saturate(0.7) brightness(0.52); }
+body[data-sky="sunset"] .sky-current, body[data-previous-sky="sunset"] .sky-previous { filter: saturate(0.68) contrast(1.03); }
+.crew-call { font-size: 14px; border: 1px solid rgba(102, 118, 105, 0.4); background: rgba(249, 245, 233, 0.79); border-radius: 5px; padding: 8px 15px; margin: 12px auto 4px; }
+#drinks { gap: 12px; margin: 12px auto; }
+#drinks button { font-size: 14px; padding: 8px 4px; border-radius: 5px; }
+#drinks button::before { width: 76px; height: 94px; border: 0px; border-radius: 0px; margin: 0px auto 7px; background: var(--drink-image) center/contain no-repeat !important; }
+[data-drink="water"] { --drink-image: url('/above-the-clouds-site/assets/water-v17.png'); }
+[data-drink="juice"] { --drink-image: url('/above-the-clouds-site/assets/juice-v17.png'); }
+[data-drink="coffee"] { --drink-image: url('/above-the-clouds-site/assets/coffee-v17.png'); }
+.cup { width: 142px; height: 160px; border: 0px; border-radius: 0px; box-shadow: none; margin: 6px auto; padding: 0px; filter: drop-shadow(rgba(41, 52, 45, 0.145) 2px 6px 3px); background: var(--drink-image) center/contain no-repeat !important; }
+.cup:not([hidden]) { animation: 0.5s ease-out 0s 1 normal none running serve-cup; }
+.cup.sipping { animation: 0.8s ease-in-out 0s 1 normal none running sip; }
+.table-tools { margin-top: 14px; }
+.tray.service-open .table-tools, .tray.reading .crew-call { display: none; }
+@keyframes serve-cup {
+  0% { opacity: 0; transform: translateY(-10px); }
+  100% { opacity: 1; transform: translateY(0px); }
+}
+@media (max-width: 760px) {
+  .cup { width: 130px; height: 140px; }
+  #drinks button::before { width: 64px; height: 82px; }
+}
+#drinks { max-width: 390px; }
+#drinks button:hover { border-color: transparent; background: rgba(250, 246, 233, 0.314); }
+body[data-view="table"] .tray:has(.cup:not([hidden])):not(.reading):not(.service-open) { display: grid; grid-template-columns: 1fr 1fr; place-items: center; height: auto; max-height: none; gap: 8px 16px; }
+.tray:has(.cup:not([hidden])):not(.reading):not(.service-open) .cup { grid-area: 1 / 1; margin: 0px; }
+.tray:has(.cup:not([hidden])):not(.reading):not(.service-open) .table-tools { grid-area: 1 / 2; margin: 0px; }
+.tray:has(.cup:not([hidden])):not(.reading):not(.service-open) .crew-call { grid-area: 2 / 1 / auto / -1; margin-top: 8px; }
+.tray:has(.cup:not([hidden])):not(.reading):not(.service-open) #sip-note { grid-area: 3 / 1 / auto / -1; }
+body[data-scene="complete"] { background: rgb(23, 30, 34); }
+.complete-screen { isolation: isolate; position: relative; padding: 48px 24px; color: rgb(236, 235, 224); gap: 0px; }
+.complete-screen::before { content: ""; position: fixed; inset: 0px; z-index: -1; background: radial-gradient(at 50% 35%, rgb(69, 85, 102) 0%, rgb(39, 56, 71) 40%, rgb(23, 34, 43) 85%); animation: 4s ease 0s 1 normal both running ending-light; }
+.complete-screen .eyebrow { font-size: 11px; letter-spacing: 0.22em; color: rgb(182, 198, 206); margin: 0px 0px 28px; animation: 1.4s ease 0.4s 1 normal both running ending-arrive; }
+.complete-screen h1 { font-size: clamp(25px, 3vw, 34px); font-weight: 400; letter-spacing: -0.025em; max-width: 440px; margin: 36px 0px 12px; animation: 1.8s ease 1.6s 1 normal both running ending-arrive; }
+.complete-screen #completion-note { font-size: 15px; line-height: 1.8; white-space: pre-line; color: rgb(193, 206, 210); margin: 0px 0px 28px; max-width: 340px; animation: 1.8s ease 2s 1 normal both running ending-arrive; }
+.complete-screen button { font-size: 13px; color: rgb(211, 222, 220); background: transparent; border: 1px solid rgba(200, 214, 208, 0.3); border-radius: 5px; padding: 10px 17px; animation: 1.5s ease 2.5s 1 normal both running ending-arrive; }
+.complete-screen button:hover { background: rgba(200, 214, 208, 0.07); }
+@keyframes ending-light {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+@keyframes ending-arrive {
+  0% { opacity: 0; transform: translateY(5px); }
+  100% { opacity: 1; transform: translateY(0px); }
+}
+@media (max-height: 620px) {
+  .complete-screen { padding: 30px 24px; }
+  .complete-screen .eyebrow { margin-bottom: 18px; }
+  .complete-screen h1 { margin-top: 24px; }
+  .complete-screen #completion-note { margin-bottom: 20px; }
+}
+.change-flight { display: block; margin: 16px auto 0px; font-size: 13px; border: 0px; background: transparent; color: rgb(76, 105, 121); padding: 4px 8px; text-decoration: underline; text-underline-offset: 3px; }
+#issued-pass { margin-top: 6px; background: rgb(255, 253, 244); border: 1px solid rgb(186, 197, 198); padding: 20px 20px 16px; position: relative; animation: 0.5s ease 0s 1 normal both running ticket-issued; }
+.pass-airline { margin: 0px; font-size: 12px; letter-spacing: 0.07em; text-transform: uppercase; color: rgb(96, 115, 124); }
+#pass-city { margin: 8px 0px 20px; font-size: 42px; line-height: 1.1; font-weight: 500; letter-spacing: -0.03em; }
+.pass-details { gap: 12px; }
+.pass-details dt { font-size: 11px; text-transform: uppercase; color: rgb(115, 129, 138); }
+.pass-details dd { font-size: 17px; white-space: nowrap; }
+.pass-barcode { height: 32px; width: 70%; margin: 24px 0px 18px; background: repeating-linear-gradient(90deg, rgb(59, 80, 92) 0px, rgb(59, 80, 92) 2px, transparent 2px, transparent 5px, rgb(59, 80, 92) 5px, rgb(59, 80, 92) 6px, transparent 6px, transparent 10px, rgb(59, 80, 92) 10px, rgb(59, 80, 92) 13px, transparent 13px, transparent 15px); opacity: 0.72; }
+.gate-status { font-size: 14px; margin: 0px; color: rgb(59, 97, 120); font-weight: 600; border-top: 1px dashed rgb(195, 205, 204); padding-top: 14px; }
+#gate-note { font-size: 13px; line-height: 1.6; color: rgb(99, 116, 122); margin: 7px 0px 0px; }
+body[data-departure="boarding"] .gate-status { color: rgb(56, 101, 83); }
+body[data-departure="scanning"] .pass-barcode { animation: 0.8s ease 0s 1 normal both running ticket-scan; }
+@keyframes ticket-issued {
+  0% { opacity: 0; transform: translateY(12px); }
+  100% { opacity: 1; transform: translateY(0px); }
+}
+@keyframes ticket-scan {
+  50% { opacity: 0.15; filter: drop-shadow(rgb(67, 138, 118) 0px 0px 5px); }
+  100% { opacity: 0.5; }
+}
+.destination-card { width: min(390px, 100%); padding: 14px 14px 20px; background: rgb(242, 237, 222); color: rgb(53, 73, 82); box-shadow: rgba(8, 17, 25, 0.27) 0px 14px 38px; animation: 1.8s ease 0.6s 1 normal both running ending-arrive; }
+.destination-card img { display: block; width: 100%; height: auto; aspect-ratio: 3 / 2; object-fit: cover; filter: saturate(0.82); background: rgb(183, 195, 198); }
+.destination-card h2 { font-size: 36px; font-weight: 500; letter-spacing: -0.025em; margin: 18px 0px 3px; }
+.destination-card p { font-size: 14px; margin: 0px; color: rgb(99, 116, 121); }
+.complete-screen .destination-card + .sr-only { margin: 0px; }
+.complete-screen #restart { margin-top: 26px; }
+@media (max-width: 760px) {
+  #issued-pass { padding: 18px 16px 15px; }
+  #pass-city { font-size: 36px; }
+  .pass-details { gap: 8px; }
+  .pass-details dd { font-size: 15px; }
+  .pass-barcode { margin-top: 20px; }
+  .destination-card { width: 330px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  #issued-pass, .pass-barcode, .destination-card { animation: auto ease 0s 1 normal none running none; }
+}
+:root { --paper: #f5f0e3; --ink: #354952; --journey-blue: #456778; --journey-rule: #71837f55; --journey-night: #253745; }
+.journey-print { position: fixed; inset: 0px; z-index: 30; pointer-events: none; opacity: 0.05; background-image: radial-gradient(rgb(38, 60, 70) 0.55px, transparent 0.75px); background-size: 3px 3px; }
+body:not([data-scene])::before { background-image: url("/above-the-clouds-site/assets/terminal-v20.png"); background-position: center center; filter: saturate(0.8); }
+.terminal-board { background: rgba(245, 240, 227, 0.96); border-color: var(--journey-rule); border-radius: 3px; box-shadow: rgba(38, 59, 64, 0.14) 0px 12px 32px; }
+.terminal-board .eyebrow { background: var(--journey-blue); color: var(--paper); }
+.terminal-board h1 { font-size: 28px; font-weight: 500; }
+.flight-list label:has(input:checked) { background: rgb(220, 229, 228); box-shadow: inset 3px 0 var(--journey-blue); }
+.boarding-row .primary { background: var(--journey-blue); border-color: var(--journey-blue); color: var(--paper); }
+#issued-pass, .boarding-ticket, .destination-card { background: var(--paper); border: 1px solid var(--journey-rule); border-radius: 2px; box-shadow: rgba(38, 59, 64, 0.063) 0px 3px 10px; }
+.pass-airline, .boarding-ticket > p { color: rgb(100, 123, 130); font-size: 12px; letter-spacing: 0.07em; text-transform: uppercase; }
+#pass-city, .boarding-ticket h3, .destination-card h2 { font-size: 36px; line-height: 1.1; font-weight: 500; letter-spacing: -0.025em; }
+.gate-status { border-top-color: var(--journey-rule); color: var(--journey-blue); }
+.controls, .view-navigation button, .music-toggle, .cabin-light, #announcement, .crew-call, .book-close { background: rgba(245, 240, 227, 0.863); color: var(--ink); border-radius: 3px; box-shadow: rgba(38, 59, 64, 0.063) 0px 2px 8px; }
+.controls button { border-radius: 2px; }
+.controls button:hover, .view-navigation button:hover, .crew-call:hover { background: rgb(229, 232, 220); }
+#exit-dialog, dialog { background: var(--paper); border-color: var(--journey-rule); border-radius: 3px; }
+.masthead { position: fixed; top: 25px; left: 34px; z-index: 14; pointer-events: none; }
+.masthead .brand { pointer-events: auto; }
+.journey-marker { font-size: 12px; font-weight: 500; letter-spacing: 0.04em; margin: 8px 0px 0px; color: var(--ink); font-variant-numeric: tabular-nums; }
+body[data-scene] .masthead { display: block; }
+body[data-scene] .brand { display: none; }
+body[data-scene] .journey-marker { margin: 0px; padding: 6px 10px; background: rgba(245, 240, 227, 0.79); border-radius: 3px; transition: opacity 1.2s; }
+body[data-scene="closing"] .journey-marker { opacity: 0; }
+body[data-scene="complete"] .journey-marker { color: rgb(215, 224, 223); background: transparent; opacity: 0.7; }
+body:not([data-scene])[data-departure="scanning"]::after { background: var(--paper); opacity: var(--gate-veil,0); z-index: 12; }
+body[data-scene="boarding"]::after { background: var(--paper); opacity: var(--boarding-veil,0); }
+body[data-scene="closing"]::after { background: var(--journey-night); }
+body[data-scene="complete"] { background: var(--journey-night); }
+.complete-screen::before { background: radial-gradient(ellipse at 50% 38%,#3c5160 0%,var(--journey-night) 75%); animation: auto ease 0s 1 normal none running none; }
+.complete-screen .eyebrow { letter-spacing: 0.12em; font-weight: 500; color: rgb(193, 206, 209); }
+.destination-card { box-shadow: rgba(10, 27, 41, 0.17) 0px 12px 32px; padding: 14px 14px 20px; }
+.destination-card h2 { margin-top: 18px; }
+.destination-card p { color: rgb(100, 123, 130); }
+.complete-screen button { border-color: rgba(193, 206, 209, 0.4); border-radius: 3px; }
+@media (max-width: 760px) {
+  .masthead { top: 18px; left: 18px; }
+  .journey-marker { font-size: 11px; }
+  .terminal-board h1 { font-size: 26px; }
+  body:not([data-scene])::before { background-position: 36% center; }
+}
+@media (prefers-reduced-motion: reduce) {
+  body:not([data-scene])[data-departure="scanning"]::after { display: none; }
+}
+body[data-view="window"][data-scene] .masthead { opacity: 0; }
+body[data-scene="complete"] .masthead { opacity: 1; }
+.masthead { view-transition-name: journey-marker; }
+::view-transition-old(journey-marker), ::view-transition-new(journey-marker) { animation: auto ease 0s 1 normal none running none; mix-blend-mode: normal; }
+.overhead-panel { position: absolute; right: 124px; top: 22px; display: flex; align-items: center; gap: 6px; z-index: 5; }
+.overhead-panel .belt-sign, .overhead-panel .cabin-light, .overhead-panel .crew-call { position: static; width: 34px; height: 36px; margin: 0px; padding: 6px; display: flex; align-items: center; justify-content: center; border: 0px; border-radius: 3px; }
+.overhead-panel .belt-sign { background: rgba(37, 55, 69, 0.133); color: rgb(92, 106, 108); pointer-events: none; box-shadow: rgba(84, 101, 104, 0.133) 0px 0px 0px 1px inset; }
+.belt-sign svg, .crew-call svg { width: 24px; height: 24px; fill: none; stroke: currentcolor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.overhead-panel .belt-sign[data-lit="true"] { color: rgb(187, 114, 63); background: rgba(245, 229, 201, 0.79); box-shadow: rgba(184, 139, 86, 0.267) 0px 0px 0px 1px inset; }
+.overhead-panel .crew-call[aria-expanded="true"] { background: rgb(220, 229, 228); color: rgb(69, 103, 120); }
+.overhead-panel .crew-call:disabled { opacity: 0.5; }
+body[data-view="window"] .overhead-panel { display: none; }
+.quiet-rest .overhead-panel { opacity: 0; pointer-events: none; }
+.tray-action { font-size: 13px; padding: 7px 11px; border: 1px solid var(--journey-rule); background: rgba(245, 240, 227, 0.72); box-shadow: none; border-radius: 3px; }
+body[data-view="table"] .table-tools { position: absolute; right: 18%; bottom: 0px; margin: 0px; }
+body[data-view="table"] .tray:has(.cup:not([hidden])):not(.reading):not(.service-open) { display: block; height: 42svh; max-height: 390px; }
+.tray:has(.cup:not([hidden])):not(.reading):not(.service-open) .cup { position: absolute; left: 30%; bottom: 10%; margin: 0px; }
+.tray:has(.cup:not([hidden])):not(.reading):not(.service-open) #sip-note { position: absolute; left: 24%; bottom: 0px; margin: 0px; font-size: 12px; }
+@media (max-width: 760px) {
+  .overhead-panel { right: 112px; top: 20px; gap: 4px; }
+  .overhead-panel .belt-sign, .overhead-panel .cabin-light, .overhead-panel .crew-call { width: 29px; height: 36px; padding: 4px; }
+  body[data-view="table"] .tray { height: 38svh; max-height: 300px; }
+  body[data-view="table"] .table-tools { right: 8%; bottom: 0px; }
+  .tray:has(.cup:not([hidden])):not(.reading):not(.service-open) .cup { left: 14%; }
+}
+.overhead-panel { right: 22px; top: 22px; gap: 2px; padding: 3px 5px; background: var(--paper); border: 1px solid var(--journey-rule); border-radius: 3px; box-shadow: rgba(38, 59, 64, 0.063) 0px 2px 8px; }
+.overhead-panel .cabin-light, .overhead-panel .crew-call, .overhead-panel .music-toggle { background: transparent; box-shadow: none; border: 0px; color: var(--ink); }
+.overhead-panel .music-toggle { position: static; height: 36px; padding: 4px 9px; margin: 0px; border-left: 1px solid var(--journey-rule); border-radius: 0px; font-size: 12px; }
+.overhead-panel .belt-sign { background: transparent; box-shadow: none; }
+.overhead-panel .belt-sign[data-lit="true"] { background: transparent; box-shadow: none; color: rgb(152, 82, 30); }
+.overhead-panel .cabin-light:hover, .overhead-panel .crew-call:hover, .overhead-panel .music-toggle:hover { background: rgb(221, 228, 221); }
+.overhead-panel .crew-call[aria-expanded="true"], .overhead-panel .cabin-light[aria-pressed="true"], .overhead-panel .music-toggle[aria-pressed="true"] { background: rgb(221, 228, 221); }
+.controls, #announcement, .pause-note, .book-close, body[data-scene] .journey-marker { background: var(--paper); color: var(--ink); }
+#service-note, #sip-note { width: fit-content; max-width: 100%; margin: 0px auto 14px; padding: 9px 13px; background: var(--paper); color: var(--ink); border-radius: 3px; line-height: 1.5; font-size: 14px; }
+.book-close { border: 0px; font-size: 12px; padding: 7px 12px; }
+.view-navigation button { background: var(--paper); color: var(--ink); }
+body[data-scene="complete"] .journey-marker { background: transparent; color: rgb(215, 224, 223); }
+@media (max-width: 760px) {
+  .overhead-panel { right: 16px; top: 20px; padding: 2px 4px; }
+  .overhead-panel .music-toggle { padding-inline: 7px; }
+  .overhead-panel .music-toggle > span:first-child { font-size: 18px; }
+}
+.tray.service-open #service-note { width: min(390px, 100%); margin: 0px auto; border-radius: 3px 3px 0px 0px; border-bottom: 1px solid var(--journey-rule); }
+.tray.service-open #drinks { width: min(390px, 100%); margin: 0px auto; padding: 10px 8px 12px; background: var(--paper); color: var(--ink); border-radius: 0px 0px 3px 3px; }
+#drinks button { color: var(--ink); }
+#clear-drink { display: block; width: min(390px, 100%); margin: 0px auto; padding: 11px 12px; border-right: 0px; border-bottom: 0px; border-left: 0px; border-image: none; border-top: 1px solid var(--journey-rule); border-radius: 0px 0px 3px 3px; background: var(--paper); color: var(--ink); font-size: 13px; }
+#clear-drink:hover { background: rgb(225, 231, 221); }
+body { --scene-label: #354952; --scene-shadow: 0 1px 3px #fff9,0 0 8px #f5f0e380; }
+body.dim { --scene-label: #fff8e8; --scene-shadow: 0 1px 3px #000c,0 0 8px #0008; }
+.overhead-panel { background: transparent; border: 0px; box-shadow: none; padding: 3px 0px; gap: 5px; }
+.overhead-panel .belt-sign, .overhead-panel .cabin-light, .overhead-panel .crew-call, .overhead-panel .music-toggle { color: var(--scene-label); background: transparent; box-shadow: none; border: 0px; filter: drop-shadow(rgba(0, 0, 0, 0.2) 0px 1px 2px); }
+.overhead-panel .belt-sign[data-lit="true"] { color: rgb(169, 97, 36); filter: drop-shadow(rgb(243, 208, 157) 0px 0px 3px); }
+body.dim .overhead-panel .belt-sign[data-lit="true"] { color: rgb(234, 189, 126); }
+.overhead-panel .cabin-light:hover, .overhead-panel .crew-call:hover, .overhead-panel .music-toggle:hover, .overhead-panel .crew-call[aria-expanded="true"], .overhead-panel .cabin-light[aria-pressed="true"], .overhead-panel .music-toggle[aria-pressed="true"] { background: transparent; box-shadow: none; opacity: 0.75; }
+.controls, #announcement, .pause-note, .book-close, .view-navigation button, body[data-scene] .journey-marker { background: transparent; border: 0px; box-shadow: none; color: var(--scene-label); text-shadow: var(--scene-shadow); font-weight: 500; backdrop-filter: none; }
+.controls button, .controls button:hover, #sound-toggle[aria-pressed="true"], .view-navigation button:hover, .book-close:hover { background: transparent; color: var(--scene-label); text-shadow: var(--scene-shadow); }
+#sound-toggle { border-color: transparent !important; }
+#service-note, #sip-note, .tray.service-open #service-note, .tray.service-open #drinks, #clear-drink { background: transparent; border: 0px; box-shadow: none; color: var(--scene-label); text-shadow: var(--scene-shadow); }
+#drinks button, #drinks button:hover, #clear-drink:hover { background: transparent; color: var(--scene-label); text-shadow: var(--scene-shadow); border: 0px; font-weight: 500; }
+body[data-scene="closing"] { --scene-label: #fff8e8; --scene-shadow: 0 1px 3px #000c; }
+body[data-scene="complete"] .journey-marker { color: rgb(215, 224, 223); text-shadow: none; }
+.overhead-panel .crew-call[aria-expanded="true"], .overhead-panel .cabin-light[aria-pressed="true"], .overhead-panel .music-toggle[aria-pressed="true"] { color: var(--scene-label); opacity: 1; }
+body[data-route="bangkok"][data-scene], body[data-view="window"][data-sky="blue-hour"] { --scene-label: #fff8e8; --scene-shadow: 0 1px 3px #000c,0 0 8px #0008; }
+body.dim button:focus-visible { outline-color: rgb(255, 248, 232); }
+#flight-progress.flight-map { position: absolute; bottom: 58px; left: 50%; transform: translateX(-50%); display: block; width: min(480px, -32px + 100vw); max-width: none; padding: 15px 18px 10px; background: rgba(37, 55, 69, 0.96); color: rgb(241, 237, 223); border: 1px solid rgba(179, 198, 195, 0.17); border-radius: 3px; box-shadow: rgba(7, 23, 35, 0.25) 0px 12px 36px; text-align: left; }
+.map-heading { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: 13px; letter-spacing: 0.02em; }
+.map-heading #map-remaining { font-size: 11px; color: rgb(196, 208, 207); font-variant-numeric: tabular-nums; }
+.route-map { display: block; width: 100%; height: auto; margin: 5px 0px; overflow: hidden; }
+.route-map circle { fill: rgb(241, 237, 223); }
+.route-map text { fill: rgb(231, 233, 223); font: 13px SourceSans, sans-serif; }
+.map-route-ahead { fill: none; stroke: rgba(217, 202, 160, 0.5); stroke-width: 1.5; stroke-dasharray: 4, 5; }
+.map-route-travelled { fill: none; stroke: rgb(230, 201, 139); stroke-width: 2; stroke-dasharray: 100; stroke-dashoffset: 100; }
+.route-map #map-plane { fill: rgb(255, 246, 223); stroke: rgb(37, 55, 69); stroke-width: 0.7; }
+.flight-map .map-caption { font-size: 11px; color: rgb(193, 205, 202); margin: 0px; text-align: center; }
+body:has(#flight-progress:not([hidden])) #announcement { visibility: hidden; }
+@media (max-width: 760px) {
+  #flight-progress.flight-map { padding: 12px 13px 10px; bottom: 55px; width: calc(-32px + 100vw); }
+}
+#progress-toggle:disabled { opacity: 1; cursor: default; }
+body { cursor: url("/above-the-clouds-site/assets/cursor-arrow-v24.svg") 3 2, auto; }
+button:not(:disabled), a, summary, select, input[type="radio"], input[type="checkbox"], label:has(input) { cursor: url("/above-the-clouds-site/assets/cursor-hand-v24.svg") 12 4, pointer; }
+button:disabled { cursor: not-allowed; }
+.controls { gap: 7px; padding: 0px; display: flex; justify-content: center; align-items: center; }
+.controls button, #sound-toggle { background: rgba(245, 240, 227, 0.92); color: rgb(53, 73, 82); text-shadow: none; border-radius: 4px; padding: 8px 11px; box-shadow: rgba(38, 59, 64, 0.11) 0px 2px 5px; transition: background 0.15s, border-color 0.15s, box-shadow 0.15s; border: 1px solid rgba(113, 135, 126, 0.5) !important; }
+.controls button:hover, #sound-toggle:hover { background: rgb(255, 249, 235); color: rgb(53, 73, 82); box-shadow: rgba(217, 181, 125, 0.333) 0px 0px 0px 2px; border-color: rgb(165, 121, 59) !important; }
+.controls #progress-toggle[aria-expanded="true"], .controls #sound-toggle[aria-pressed="true"] { background: rgb(232, 214, 183); color: rgb(53, 73, 82); border-color: rgb(154, 118, 63) !important; }
+body:has(#exit-dialog[open]) #exit-open { background: rgb(232, 214, 183); border-color: rgb(154, 118, 63) !important; }
+.controls #progress-toggle:disabled { background: transparent; box-shadow: none; color: var(--scene-label); text-shadow: var(--scene-shadow); cursor: default; border-color: transparent !important; }
+.menu-actions #book-open[aria-pressed="true"] { background: rgb(232, 233, 221); color: rgb(53, 73, 82); }
+.menu-status { font-size: 13px; color: rgb(108, 116, 110); line-height: 1.4; margin: 7px 0px 10px; }
+.flight-list label:has(input:checked) { outline: rgb(165, 121, 59) solid 1px; outline-offset: 2px; }
+button:focus-visible, summary:focus-visible { outline: rgb(165, 121, 59) solid 2px; outline-offset: 3px; }
+@media (max-width: 760px) {
+  .controls { gap: 5px; }
+  .controls button, #sound-toggle, #progress-toggle { font-size: 12px; padding: 8px; }
+}
+@media (pointer: coarse) {
+  body, button:not(:disabled), a, summary, select, input, label:has(input) { cursor: auto; }
+}
+body[data-scene="closing"]::after { background: linear-gradient(rgba(37, 55, 69, 0.808), rgba(37, 55, 69, 0.9)); }
+.complete-screen::before { background: linear-gradient(rgba(37, 55, 69, 0.808), rgba(37, 55, 69, 0.9)), url("/above-the-clouds-site/assets/cabin-window-v3.png") center center / cover no-repeat; animation: auto ease 0s 1 normal none running none; }
+body[data-scene="complete"] .journey-print { opacity: 0.09; }
+.destination-card { box-shadow: rgba(7, 23, 34, 0.333) 0px 12px 32px; }
+@media (max-width: 760px) {
+  .complete-screen::before { background-position: 36% center; }
+}
+body[data-view="table"] .overhead-panel { --scene-label: #fff8e8; }
+body[data-view="table"] .overhead-panel .belt-sign, body[data-view="table"] .overhead-panel .cabin-light, body[data-view="table"] .overhead-panel .crew-call, body[data-view="table"] .overhead-panel .music-toggle { color: rgb(255, 248, 232); filter: drop-shadow(rgba(0, 0, 0, 0.733) 0px 1px 2px); }
+body[data-view="table"] .overhead-panel .belt-sign[data-lit="true"] { color: rgb(234, 189, 126); }
+#sound-toggle { max-width: 132px; line-height: 1.25; white-space: normal; }
+@media (max-width: 760px) {
+  #sound-toggle { max-width: 108px; }
+}
+body[data-view="table"] #book-open { position: absolute; right: 18%; bottom: 0px; background: rgba(245, 240, 227, 0.88); border-color: rgba(113, 135, 126, 0.5); box-shadow: rgba(38, 59, 64, 0.11) 0px 2px 5px; color: rgb(53, 73, 82); }
+body[data-view="table"] #book-open:hover { background: rgb(255, 249, 235); border-color: rgb(165, 121, 59); box-shadow: rgba(217, 181, 125, 0.333) 0px 0px 0px 2px; }
+body.dim[data-view="table"] #book-open { background: rgba(37, 55, 69, 0.85); color: rgb(255, 248, 232); border-color: rgba(193, 206, 209, 0.4); }
+@media (max-width: 760px) {
+  body[data-view="table"] #book-open { right: 8%; }
+}
+body[data-view="table"] .table-view { background-position: center center; }
+.table-motion { left: 50%; }
+body[data-view="table"] .tray { left: calc(50% - min(37.5vw, 450px)); right: auto; transform: none; width: min(75vw, 900px); }
+.reading-scene { left: 50%; }
+.flight-time { font-size: 13px; font-variant-numeric: tabular-nums; color: var(--scene-label); text-shadow: var(--scene-shadow); padding-right: 5px; white-space: nowrap; }
+.controls #progress-toggle:disabled { background: rgba(245, 240, 227, 0.69); box-shadow: none; color: rgb(104, 118, 123); text-shadow: none; opacity: 0.65; cursor: not-allowed; border-color: rgba(113, 135, 126, 0.333) !important; }
+body[data-view="window"] .journey-marker { display: block; }
+html:has(body[data-look-direction="down"])::view-transition-old(root) { animation-name: look-out-down; }
+html:has(body[data-look-direction="down"])::view-transition-new(root) { animation-name: look-in-down; }
+html:has(body[data-look-direction="up"])::view-transition-old(root) { animation-name: look-out-up; }
+html:has(body[data-look-direction="up"])::view-transition-new(root) { animation-name: look-in-up; }
+@keyframes look-out-down {
+  100% { transform: translateY(-12%); opacity: 0; }
+}
+@keyframes look-in-down {
+  0% { transform: translateY(12%); opacity: 0; }
+}
+@keyframes look-out-up {
+  100% { transform: translateY(12%); opacity: 0; }
+}
+@keyframes look-in-up {
+  0% { transform: translateY(-12%); opacity: 0; }
+}
+@media (max-width: 760px) {
+  body[data-view="table"] .tray { left: 16px; width: calc(100% - 32px); }
+  .flight-time { font-size: 11px; padding-right: 2px; }
+  .table-motion { left: 50%; }
+}
+body[data-view="table"] .flight-time { color: rgb(255, 248, 232); text-shadow: rgba(0, 0, 0, 0.8) 0px 1px 3px, rgba(0, 0, 0, 0.533) 0px 0px 6px; }
+@media (max-width: 760px) {
+  body[data-view="table"][data-scene] .journey-marker { color: rgb(255, 248, 232); text-shadow: rgba(0, 0, 0, 0.8) 0px 1px 3px, rgba(0, 0, 0, 0.533) 0px 0px 6px; }
+}
+.controls button, #sound-toggle { height: 38px; line-height: 1.25; white-space: nowrap; }
+#sound-toggle { max-width: none; }
+@media (max-width: 760px) {
+  .controls button, #sound-toggle { height: 36px; }
+}
+.audio-controls { display: flex; gap: 0px; align-items: center; }
+.audio-controls #sound-toggle { border-radius: 4px 0px 0px 4px; }
+.audio-controls #noise-cancel { border-radius: 0px 4px 4px 0px; border-left: 0px !important; }
+.controls #noise-cancel[aria-pressed="true"] { background: rgb(232, 214, 183); border-color: rgb(154, 118, 63) !important; }
+.controls #noise-cancel:disabled { opacity: 0.55; cursor: default; }
+@media (max-width: 760px) {
+  .controls { flex-wrap: wrap; justify-content: center; gap: 5px; }
+  .flight-time { flex-basis: 100%; padding: 0px 0px 3px; }
+  .controls .audio-controls button { padding-inline: 9px; }
+}
+body[data-view="table"] .tray .cup { width: clamp(100px, 11vw, 142px); height: clamp(112px, 12.5vw, 160px); z-index: 3; position: fixed !important; inset: calc(50svh - (0.065 * max(56.281vw, 100svh))) auto auto min(50vw + (0.221 * max(100vw, 177.683svh)), -65px + 100vw) !important; margin: 0px !important; scale: 1 !important; transform: translate(-50%, -88%) !important; }
+body[data-view="table"] .tray .cup.sipping { animation: 0.8s ease-in-out 0s 1 normal none running cup-sip-v32; }
+@keyframes cup-sip-v32 {
+  50% { translate: 0px -14px; rotate: -3deg; }
+}
+.overhead-panel .cabin-light, .overhead-panel .crew-call { min-width: 44px; min-height: 44px; }
+.overhead-panel .cabin-light[aria-pressed="true"], .overhead-panel .music-toggle[aria-pressed="true"], .overhead-panel .crew-call[aria-expanded="true"] { color: rgb(234, 189, 126) !important; filter: drop-shadow(rgba(0, 0, 0, 0.733) 0px 1px 2px); }
+.overhead-panel button:focus-visible { outline: rgb(234, 189, 126) solid 2px; outline-offset: 1px; }
+body[data-scene]::before { background-image: url("/above-the-clouds-site/assets/cabin-seat-v32.png"); background-position: center center; transform: none; }
+body[data-scene] .ground-view { display: none; }
+.window-motion { left: 50%; }
+body[data-view="seat"] .window-motion > g, body[data-view="rest"] .window-motion > g { clip-path: url("#glass-mask"); }
+body[data-view="seat"] .airplane-window { left: 0px; top: 0px; width: 12%; height: 40%; }
+body[data-view="seat"] .overhead-panel { --scene-label: #fff8e8; }
+body[data-view="seat"] .overhead-panel .belt-sign, body[data-view="seat"] .overhead-panel button { color: rgb(255, 248, 232); filter: drop-shadow(rgba(0, 0, 0, 0.733) 0px 1px 2px); }
+body[data-view="seat"] .flight-time, body[data-view="seat"] #announcement { color: rgb(255, 248, 232); text-shadow: rgba(0, 0, 0, 0.8) 0px 1px 3px; }
+.complete-screen::before { background-image: linear-gradient(rgba(37, 55, 69, 0.808), rgba(37, 55, 69, 0.9)), url("/above-the-clouds-site/assets/cabin-seat-v32.png"); background-position: center center; }
+body[data-view="seat"] .look-right { color: rgb(255, 248, 232); text-shadow: rgba(0, 0, 0, 0.8) 0px 1px 3px; }
+body[data-view="seat"] .overhead-panel .belt-sign[data-lit="true"] { color: rgb(234, 189, 126); }
+.departure-intro { font-size: 15px; line-height: 1.5; color: rgb(91, 112, 119); margin: -4px 0px 18px; }
+.sound-choice small { display: block; font-size: 12px; color: rgb(99, 116, 122); margin-top: 3px; }
+.airline-row #voice-preview { font-size: 12px; padding: 7px 8px; white-space: nowrap; }
+.overhead-panel .crew-call { width: auto; gap: 4px; padding-inline: 6px; font-size: 12px; }
+.overhead-panel .crew-call svg { width: 22px; flex-shrink: 0; }
+.destination-card .ending-flight { font-size: 12px; margin: 9px 0px; color: rgb(101, 119, 123); }
+@media (max-height: 700px) {
+  .departure { padding-top: 64px; padding-bottom: 24px; }
+  .terminal-board .flight-list label { padding-block: 8px; }
+  .terminal-board .eyebrow { margin-bottom: 12px; }
+  .departure-intro { margin-bottom: 12px; }
+}
+.cabin-daylight { position: fixed; inset: 0px; z-index: 0; pointer-events: none; display: none; background: linear-gradient(120deg,rgba(220,169,98,var(--daylight-warm,0)),transparent 80%),rgba(20,42,70,var(--daylight-night,0)); }
+body[data-scene]:not([data-scene="complete"]) .cabin-daylight { display: block; }
+@media (max-width: 760px) {
+  .boarding-row .primary { font-size: 14px; white-space: nowrap; min-height: 44px; padding: 10px 12px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cup.sipping { animation: auto ease 0s 1 normal none running none !important; }
+}
+#pause-note { bottom: 104px; font-size: 14px; line-height: 1.4; }
+#sound-note { top: 82px; bottom: auto; font-size: 14px; }
+body[data-view="window"] { --scene-label: #fff8e8; --scene-shadow: 0 1px 3px #000c,0 0 6px #0008; }
+body[data-view="window"] .journey-marker, body[data-view="window"] .flight-time, body[data-view="window"] .view-navigation button { color: rgb(255, 248, 232); text-shadow: var(--scene-shadow); }
+body[data-sky="open-sky"] .sky-current, body[data-previous-sky="open-sky"] .sky-previous { filter: saturate(0.74) brightness(1.04); }
+body[data-view="window"][data-window-zoom="false"]::before { display: block; background-image: url("/above-the-clouds-site/assets/cabin-window-v3.png"); background-position: center center; transform: none; }
+body[data-view="window"][data-window-zoom="false"] .window-motion > g { clip-path: url("#window-seat-glass"); }
+body[data-view="window"] .airplane-window { display: block; z-index: 1; border: 0px; border-radius: 0px; background: transparent !important; }
+body[data-view="window"][data-window-zoom="false"] .airplane-window { left: 15%; top: 3%; width: 42%; height: 77%; }
+body[data-view="window"][data-window-zoom="true"] .airplane-window { inset: 0px; width: 100%; height: 100%; }
+.view-navigation { z-index: 2; }
+.window-hint { display: none; position: absolute; left: 50%; bottom: 8%; transform: translateX(-50%); font-size: 13px; white-space: nowrap; color: rgb(255, 248, 232); text-shadow: rgba(0, 0, 0, 0.8) 0px 1px 3px, rgba(0, 0, 0, 0.533) 0px 0px 6px; pointer-events: none; }
+body[data-view="window"] .window-hint { display: block; }
+body[data-view="window"][data-window-zoom="true"] .window-hint { bottom: 17%; }
+body[data-view="window"][data-window-zoom="false"] { --scene-label: #354952; --scene-shadow: 0 1px 2px #f5f0e399; }
+body[data-view="window"][data-window-zoom="false"] .flight-time { color: rgb(53, 73, 82); text-shadow: rgba(245, 240, 227, 0.6) 0px 1px 2px; }
+@media (max-width: 760px) {
+  body[data-view="window"][data-window-zoom="false"]::before { background-position: 36% center; }
+  body[data-view="window"][data-window-zoom="false"] .window-motion { left: calc(50% + 24.8758svh - 14vw); }
+  body[data-view="window"][data-window-zoom="false"] .airplane-window { left: 2%; top: 5%; width: 88%; height: 72%; }
+}
+#flight-progress.flight-map { bottom: calc(100% + 12px); }
+.masthead { top: 24px; left: 32px; }
+.brand { display: flex; align-items: center; gap: 10px; width: max-content; min-height: 44px; font-family: SourceSans, sans-serif; color: rgb(53, 78, 92); text-shadow: rgba(245, 240, 227, 0.4) 0px 1px 2px; transform: none; padding: 0px; background: transparent; border: 0px; }
+.brand-window { width: 30px; height: 40px; flex: 0 0 auto; stroke: currentcolor; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
+.brand-horizon { opacity: 0.7; }
+.brand-wordmark { display: flex; flex-direction: column; gap: 1px; }
+.brand-overline { font-size: 11px; font-weight: 500; letter-spacing: 0.13em; line-height: 1.2; }
+.brand-name { font-size: 27px; font-weight: 600; letter-spacing: -0.035em; line-height: 1; }
+.brand:hover { color: rgb(32, 62, 80); }
+.brand:focus-visible { outline: rgb(96, 127, 141) solid 2px; outline-offset: 6px; border-radius: 2px; }
+.terminal-board h1 { font-weight: 550; letter-spacing: -0.025em; line-height: 1.15; }
+.journey-marker { font-family: SourceSans, sans-serif; font-size: 12px; letter-spacing: 0.055em; }
+body[data-scene]:not([data-scene="complete"]) .journey-marker { color: rgb(255, 248, 232); text-shadow: rgb(16, 36, 49) 0px 1px 3px, rgba(16, 36, 49, 0.65) 0px 0px 7px; }
+body[data-view="window"][data-window-zoom="false"] .journey-marker { color: rgb(53, 78, 92); text-shadow: rgb(255, 248, 232) 0px 1px 3px, rgba(255, 248, 232, 0.6) 0px 0px 7px; }
+@media (max-width: 760px) {
+  .masthead { top: 16px; left: 18px; }
+  .brand { gap: 8px; min-height: 40px; }
+  .brand-window { width: 25px; height: 34px; }
+  .brand-overline { font-size: 10px; }
+  .brand-name { font-size: 24px; }
+  .journey-marker { font-size: 11px; }
+}
+.cabin-choice-row { display: flex; align-items: center; gap: 14px; margin: 0px 0px 10px; font-size: 15px; }
+.cabin-choice-row label { white-space: nowrap; }
+.cabin-choice-row select { flex: 1 1 0%; min-width: 0px; font: inherit; border-width: 0px 0px 1px; border-style: none none solid; border-color: currentcolor currentcolor rgba(115, 133, 139, 0.44); border-image: none; background: transparent; padding: 7px 3px; color: var(--ink); border-radius: 0px; }
+@media (max-width: 760px) {
+  .cabin-choice-row { font-size: 14px; gap: 12px; margin-bottom: 8px; }
+  .cabin-choice-row select { padding-block: 6px; }
+  .terminal-board .departure-intro { margin-bottom: 12px; }
+}
+body[data-cabin-class="business"][data-scene]::before { background-image: url("/above-the-clouds-site/assets/business-seat-v38.png"); background-position: center center; }
+body[data-cabin-class="business"][data-view="table"] .table-view { background-image: url("/above-the-clouds-site/assets/business-table-v38.png"); background-position: center center; }
+body[data-cabin-class="business"][data-view="window"][data-window-zoom="false"]::before { background-image: url("/above-the-clouds-site/assets/business-window-v38.png"); background-position: center center; }
+body[data-cabin-class="business"][data-view="seat"] .window-motion > g, body[data-cabin-class="business"][data-view="rest"] .window-motion > g, body[data-cabin-class="business"] .table-motion > g { clip-path: url("#business-glass"); }
+body[data-cabin-class="business"][data-view="window"][data-window-zoom="false"] .window-motion > g { clip-path: url("#business-window-glass"); }
+body[data-cabin-class="business"][data-view="window"][data-window-zoom="true"]::before { display: none; }
+body[data-cabin-class="business"][data-view="window"][data-window-zoom="false"] .airplane-window { left: 14%; top: 0px; width: 42%; height: 56%; }
+body[data-cabin-class="business"] .cup[data-drink="champagne"] { --drink-image: url('/above-the-clouds-site/assets/champagne-v38.png'); }
+body[data-cabin-class="business"][data-view="seat"] .tray { position: fixed; inset: 0px; width: 100%; height: 100%; max-height: none; transform: none; border: 0px; background: transparent; box-shadow: none; pointer-events: none; padding: 0px; }
+body[data-cabin-class="business"][data-view="seat"] .tray > :not(.cup) { display: none !important; }
+body[data-cabin-class="business"][data-view="seat"] .tray .cup, body[data-cabin-class="business"][data-view="table"] .tray .cup { width: clamp(90px, 9vw, 125px); height: clamp(150px, 16vw, 210px); pointer-events: auto; z-index: 3; position: fixed !important; inset: calc(50svh - (0.045 * max(56.281vw, 100svh))) auto auto min(50vw + (0.4 * max(100vw, 177.683svh)), -58px + 100vw) !important; margin: 0px !important; scale: 1 !important; transform: translate(-50%, -88%) !important; }
+body[data-cabin-class="business"][data-view="table"] .tray .cup:not([data-drink="champagne"]) { height: 150px; }
+body[data-cabin-class="business"] .complete-screen::before { background-image: linear-gradient(rgba(37, 55, 69, 0.808), rgba(37, 55, 69, 0.9)), url("/above-the-clouds-site/assets/business-seat-v38.png"); }
+@media (max-width: 760px) {
+  body[data-cabin-class="business"][data-view="seat"]::before, body[data-cabin-class="business"][data-view="rest"]::before, body[data-cabin-class="business"][data-view="table"] .table-view { background-position: 85% center; }
+  body[data-cabin-class="business"][data-view="seat"] .window-motion, body[data-cabin-class="business"][data-view="rest"] .window-motion, body[data-cabin-class="business"] .table-motion { left: calc(50% - 62.1894svh + 35vw); }
+  body[data-cabin-class="business"][data-view="window"][data-window-zoom="false"]::before { background-position: 36% center; }
+  body[data-cabin-class="business"][data-view="window"][data-window-zoom="false"] .airplane-window { left: 0px; top: 0px; width: 96%; height: 60%; }
+  body[data-cabin-class="business"][data-view="seat"] .tray .cup, body[data-cabin-class="business"][data-view="table"] .tray .cup { width: 75px; height: 140px; left: calc(-46px + 100vw) !important; top: 46svh !important; }
+}
+body[data-cabin-class="business"][data-view="seat"] .view-navigation button { color: rgb(255, 248, 232); text-shadow: rgb(16, 36, 49) 0px 1px 3px, rgba(16, 36, 49, 0.6) 0px 0px 6px; }
+body[data-cabin-class="business"][data-view="window"][data-window-zoom="false"] .view-navigation button { color: rgb(53, 78, 92); text-shadow: rgb(255, 248, 232) 0px 1px 3px, rgba(255, 248, 232, 0.6) 0px 0px 7px; }
+@media (max-width: 760px) {
+  body[data-cabin-class="business"][data-view="seat"] .tray .cup, body[data-cabin-class="business"][data-view="table"] .tray .cup { top: 35svh !important; }
+}
+[data-drink="champagne"] { --drink-image: url('/above-the-clouds-site/assets/champagne-v38.png'); }
+[data-drink="red-wine"] { --drink-image: url('/above-the-clouds-site/assets/red-wine-v38.png'); }
+[data-drink="white-wine"] { --drink-image: url('/above-the-clouds-site/assets/white-wine-v38.png'); }
+#drinks [data-premium] { display: none; }
+body[data-cabin-class="business"] #drinks [data-premium] { display: block; }
+body[data-cabin-class="business"] #drinks { flex-wrap: wrap; max-width: 430px; }
+body[data-cabin-class="business"] #drinks button { flex: 0 0 calc(33.333% - 8px); }
+.welcome-service { position: absolute; left: 50%; bottom: 145px; transform: translateX(-50%); width: min(430px, 100% - 32px); z-index: 3; text-align: center; color: rgb(255, 248, 232); text-shadow: rgb(16, 36, 49) 0px 1px 3px; }
+.welcome-service p { font-size: 16px; margin: 0px 0px 12px; }
+.welcome-drinks { display: flex; gap: 8px; justify-content: center; }
+.welcome-drinks button { flex: 1 1 0%; min-width: 0px; font-size: 13px; padding: 8px 3px; background: rgba(245, 240, 227, 0.9); color: rgb(53, 78, 92); border: 1px solid rgba(196, 180, 139, 0.5); border-radius: 3px; text-shadow: none; }
+.welcome-drinks button::before { content: ""; display: block; height: 64px; background: var(--drink-image) center/contain no-repeat; margin-bottom: 5px; }
+.welcome-drinks button:hover { background: rgb(255, 248, 232); border-color: rgb(234, 189, 126); }
+.welcome-skip { font-size: 12px; padding: 8px; margin-top: 6px; color: rgb(255, 248, 232); background: transparent; border: 0px; text-shadow: inherit; }
+@media (max-width: 760px) {
+  .welcome-service { bottom: 145px; }
+  .welcome-drinks { gap: 5px; }
+  .welcome-drinks button { font-size: 12px; }
+  .welcome-drinks button::before { height: 58px; }
+}
+/* v39: move sky texture without moving the glass. */
+.cloud-photo{transform:none!important}
+body[data-view=rest] .sky-layer,body[data-view=rest]:before,body[data-view=rest] .ground-view{transform:none}
+
+/* Business crew service fits on the tray, above the flight controls. */
+body[data-cabin-class="business"][data-view="table"] .tray.service-active {
+  bottom: max(135px, 22svh);
+  height: auto !important;
+  max-height: none !important;
+  padding: 0;
+}
+body[data-cabin-class="business"] .tray.service-active #service-note {
+  font-size: 14px;
+  padding: 4px 8px;
+  line-height: 1.4;
+  color: #354952;
+  text-shadow: 0 1px 3px #fff9;
+}
+body[data-cabin-class="business"] .tray.service-active #drinks {
+  width: min(390px, 100%);
+  gap: 6px 12px;
+  padding: 4px 8px;
+}
+body[data-cabin-class="business"] .tray.service-active #drinks button {
+  font-size: 13px;
+  padding: 3px 4px;
+  color: #354952;
+  text-shadow: 0 1px 3px #fff9;
+}
+body[data-cabin-class="business"] .tray.service-active #drinks button::before {
+  width: 48px;
+  height: 48px;
+  margin-bottom: 3px;
+}
+body[data-cabin-class="business"] .tray.service-active #clear-drink {
+  width: fit-content;
+  margin: 5px auto 0;
+  padding: 8px 12px;
+  min-height: 36px;
+  color: #354952;
+  text-shadow: 0 1px 3px #fff9;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+body[data-cabin-class="business"] .tray.service-active #clear-drink:hover {
+  color: #704b27;
+}
+body.dim[data-cabin-class="business"] .tray.service-active #service-note,
+body.dim[data-cabin-class="business"] .tray.service-active #drinks button,
+body.dim[data-cabin-class="business"] .tray.service-active #clear-drink {
+  color: #fff8e8;
+  text-shadow: 0 1px 3px #000c, 0 0 6px #0008;
+}

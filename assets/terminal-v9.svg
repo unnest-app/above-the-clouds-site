@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1000" viewBox="0 0 1600 1000">
+<defs><linearGradient id="sky" x2="0" y2="1"><stop stop-color="#b7d3e4"/><stop offset="1" stop-color="#edf4f7"/></linearGradient><linearGradient id="floor" x2="0" y2="1"><stop stop-color="#b8c7d0"/><stop offset="1" stop-color="#e5edf1"/></linearGradient><pattern id="dots" width="4" height="4" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r=".5" fill="#34494a" opacity=".15"/></pattern></defs>
+<rect width="1600" height="1000" fill="#e4edf1"/><rect y="100" width="1600" height="590" fill="url(#sky)"/>
+<path d="M0 470Q240 434 450 460T900 450T1600 460V690H0Z" fill="#a6bfcb" opacity=".35"/>
+<path d="M0 570H1600V690H0Z" fill="#c5d3dc"/><path d="M0 625H1600" stroke="#f0f5f7" stroke-width="6"/><path d="M180 660H510M740 660H1070M1300 660H1600" stroke="#edf4f7" stroke-width="3"/>
+<!-- A quiet plane on the apron, seen through the lounge glazing. -->
+<g transform="translate(160 430)"><path d="M25 132Q20 115 50 111L315 97 360 15 383 15 375 98 476 112Q510 117 525 135Q503 145 470 146L80 147Z" fill="#eee9d8" stroke="#788981" stroke-width="2"/><path d="M365 98L370 33H386L378 101Z" fill="#486962"/><path d="M260 132L150 213 123 213 192 130Z" fill="#d7d3c2" stroke="#788981" stroke-width="2"/><path d="M256 115L204 75 186 75 218 120" fill="#d6d4c5"/><path d="M53 122H69M81 121H97M109 120H125M137 119H153M165 118H181M193 117H209M221 116H237M249 115H265M277 114H293" stroke="#697e79" stroke-width="4"/><path d="M480 119L494 129H472" fill="#7b8f86"/><ellipse cx="111" cy="153" rx="17" ry="8" fill="#66786f"/><ellipse cx="307" cy="154" rx="17" ry="8" fill="#66786f"/></g>
+<rect y="690" width="1600" height="310" fill="url(#floor)"/><path d="M0 890H1600M300 690L100 1000M750 690L800 1000M1200 690L1500 1000" stroke="#8eacbd55" stroke-width="2"/>
+<g fill="#d9e4eb" stroke="#839bab66" stroke-width="2"><path d="M0 0H1600V110H0Z"/><rect x="30" y="100" width="25" height="610"/><rect x="525" y="100" width="25" height="610"/><rect x="1020" y="100" width="25" height="610"/><rect x="1515" y="100" width="25" height="610"/><rect y="685" width="1600" height="25"/></g>
+<!-- Empty airport seats frame the passenger's view. -->
+<g stroke="#657f8e" stroke-width="5"><path d="M0 870H640"/><path d="M60 870L42 1000M575 870L599 1000"/><path d="M-25 740Q45 728 170 738L193 858H-10Z" fill="#6b8ca2"/><path d="M204 738Q285 728 388 738L409 858H223Z" fill="#6b8ca2"/><path d="M420 738Q501 728 601 738L626 858H441Z" fill="#6b8ca2"/><path d="M-10 858H193V879H-10ZM223 858H409V879H223ZM441 858H626V879H441Z" fill="#92aebb"/></g>
+<rect width="1600" height="1000" fill="url(#dots)"/>
+</svg>
