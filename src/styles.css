@@ -902,3 +902,6 @@ body.dim[data-cabin-class="business"] .tray.service-active #clear-drink {
 .view-navigation button { min-width: 72px; min-height: 44px; touch-action: manipulation; }
 .view-navigation button span { pointer-events: none; }
 ::view-transition { pointer-events: none; }
+.view-navigation { view-transition-name: cabin-navigation; }
+::view-transition-group(*), ::view-transition-image-pair(*), ::view-transition-old(*), ::view-transition-new(*) { pointer-events: none; }
+::view-transition-group(cabin-navigation), ::view-transition-old(cabin-navigation), ::view-transition-new(cabin-navigation) { animation: none; }
