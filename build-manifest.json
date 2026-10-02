@@ -277,7 +277,7 @@
   {
     "path": "index.html",
     "bytes": 15478,
-    "sha256": "ab375639d9730e1a8f4e302cf08f8a1529398f792c43e60cd3059fa31e348ee2"
+    "sha256": "e035782169fa902090560de4db9ddcfeded781e9012cc0a7ca994c12fffa6740"
   },
   {
     "path": "src/announcement-timing.js",
@@ -306,7 +306,7 @@
   },
   {
     "path": "src/styles.css",
-    "bytes": 77519,
-    "sha256": "36d95897ab869b683ea54ac9da8c8351d9d1683c40e0b3057c6b6d4c846f5cd2"
+    "bytes": 78051,
+    "sha256": "5c57f03f2be3d9fbe70ed1c9b939d1298693aed3c231be215a8ff3b50eb7a312"
   }
 ]

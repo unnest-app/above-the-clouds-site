@@ -905,3 +905,9 @@ body.dim[data-cabin-class="business"] .tray.service-active #clear-drink {
 .view-navigation { view-transition-name: cabin-navigation; }
 ::view-transition-group(*), ::view-transition-image-pair(*), ::view-transition-old(*), ::view-transition-new(*) { pointer-events: none; }
 ::view-transition-group(cabin-navigation), ::view-transition-old(cabin-navigation), ::view-transition-new(cabin-navigation) { animation: none; }
+
+/* All listening controls share the same position in every cabin view. */
+.audio-controls #noise-cancel { border-radius: 0; }
+.audio-controls #music-toggle { position: static; display: inline-flex; align-items: center; gap: 4px; border-radius: 0 4px 4px 0; border-left: 0 !important; font-size: inherit; }
+.audio-controls #music-toggle > span:first-child { font-size: 17px; }
+.audio-controls #music-toggle[aria-pressed="true"] { background: rgb(232, 214, 183); color: rgb(53, 73, 82); border-color: rgb(154, 118, 63) !important; }
