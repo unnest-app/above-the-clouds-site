@@ -897,3 +897,8 @@ body.dim[data-cabin-class="business"] .tray.service-active #clear-drink {
   color: #fff8e8;
   text-shadow: 0 1px 3px #000c, 0 0 6px #0008;
 }
+
+/* Keep view controls tappable throughout the flight clock and slide transition. */
+.view-navigation button { min-width: 72px; min-height: 44px; touch-action: manipulation; }
+.view-navigation button span { pointer-events: none; }
+::view-transition { pointer-events: none; }

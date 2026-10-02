@@ -11,6 +11,7 @@ function playVoice(){
   const playing=voice;$('voice-preview').textContent='Stop voice';$('voice-preview').setAttribute('aria-pressed','true');
   playing.play().catch(()=>{$('preview-note').textContent='Voice preview is unavailable.';});
 }
+const postcards={tokyo:'/assets/postcard-tokyo-v19.png',bangkok:'/assets/postcard-bangkok-v19.png',paris:'/assets/postcard-paris-v19.png'};
 const skies={
   runway:{path:'/assets/cabin-ground-v3.png',width:1672,height:941,crop:'360 65 430 580'},
   ascent:{path:'/assets/clouds-photo-v5.jpg',width:1760,height:1160,crop:'0 0 1760 1160'},
@@ -152,8 +153,10 @@ function render(){
   $('look-right').hidden=cabin.view==='table'||cabin.view==='rest'||scene==='closing';
   $('look-left').setAttribute('aria-label',cabin.view==='table'?'Look back to your seat':'Look toward the window');
   $('look-right').setAttribute('aria-label',cabin.view==='window'?'Look back to your seat':'Look toward the table');
-  $('look-left').innerHTML=cabin.view==='table'?'↑ <span>Seat</span>':'← <span>Window</span>';
-  $('look-right').innerHTML=cabin.view==='window'?'<span>Seat</span> →':'<span>Table</span> ↓';
+  // Keep label nodes stable while the flight clock renders: replacing a pressed span loses clicks.
+  for(const [id,label] of [['look-left',cabin.view==='table'?'↑ <span>Seat</span>':'← <span>Window</span>'],['look-right',cabin.view==='window'?'<span>Seat</span> →':'<span>Table</span> ↓']]){
+    if($(id).innerHTML!==label)$(id).innerHTML=label;
+  }
   const reducedMotion=typeof matchMedia==='function'&&matchMedia('(prefers-reduced-motion: reduce)').matches;
   const skyDrift=reducedMotion||['runway','arrival-ground','ascent'].includes(sky)?0:Math.max(0,flight.elapsed-timing.cruise)*1.8%4000;document.body.style.setProperty('--cloud-photo',`${-skyDrift}px`);
   // Fit the whole sky into the glass, rather than sampling the screen's upper corner.
@@ -183,7 +186,7 @@ function render(){
       $('ending-city').textContent=flight.city;
       $('ending-flight').textContent=`${airline.name} · ${airline.flight} · ${cabinName()} · Seat ${seatNumber()}`;
       $('destination-card').hidden=flight.early;
-      $('ending-photo').setAttribute('src',`/assets/postcard-${selected.id}-v19.png`);
+      $('ending-photo').setAttribute('src',postcards[selected.id]);
       $('ending-photo').setAttribute('alt',`${flight.city} — a little glimpse of the journey ahead`);
       $('complete-title').classList.toggle('sr-only',!flight.early);
       $('completion-note').hidden=!flight.early;

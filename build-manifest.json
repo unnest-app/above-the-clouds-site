@@ -230,6 +230,21 @@
     "sha256": "1577995f8ead8e6aad11420e4dd79c9554aa02e85552ce755c5d924d66279fb2"
   },
   {
+    "path": "assets/postcard-bangkok-v19.png",
+    "bytes": 2723541,
+    "sha256": "6e4a70be2c8b3a5a29f31e49b0f82336100ca900feef54adcf390c5ae4de6251"
+  },
+  {
+    "path": "assets/postcard-paris-v19.png",
+    "bytes": 2957173,
+    "sha256": "f76b7dbdbe51645eeef2e3225745112dbd90d220c676e0497f43dcb874a88a46"
+  },
+  {
+    "path": "assets/postcard-tokyo-v19.png",
+    "bytes": 2715056,
+    "sha256": "e4e5f3481caa95ac88e1cf9a8721afb6aa42c646fe0db6f7d1a6f9bf26963f95"
+  },
+  {
     "path": "assets/red-wine-v38.png",
     "bytes": 2838764,
     "sha256": "48eb7b39436ffeb7c7c47c0425c71b59cb81b499aad8962ddcabba65c6bcfd7b"
@@ -271,8 +286,8 @@
   },
   {
     "path": "src/app.js",
-    "bytes": 30120,
-    "sha256": "5a6746e958c438e71a0ed5df0aa1bf7abd29699a2fbe89b7feb04254d659529f"
+    "bytes": 30401,
+    "sha256": "c79284f806be37da76a5cde329a4bfb82401a66953b8865d8ff00d5963a13869"
   },
   {
     "path": "src/audio.js",
@@ -291,7 +306,7 @@
   },
   {
     "path": "src/styles.css",
-    "bytes": 76900,
-    "sha256": "007cb09b0910353ffdd090f37f54e0bf814e679a3df1c69e79fb2bb6c669ed82"
+    "bytes": 77175,
+    "sha256": "10e03539d1c43ac64a9a74350d4e7ceb80599d2806e843cf520755bdeb9f6c89"
   }
 ]
