@@ -261,8 +261,8 @@
   },
   {
     "path": "index.html",
-    "bytes": 15624,
-    "sha256": "86917d143ca158f2b92359f5b63b4503a302b679b2c66a77b63244bd1c716667"
+    "bytes": 15426,
+    "sha256": "72fd5c862e8f22874007ba140b64b233d71478336dde0e767322fbf986e84e1b"
   },
   {
     "path": "src/announcement-timing.js",
@@ -271,13 +271,13 @@
   },
   {
     "path": "src/app.js",
-    "bytes": 30340,
-    "sha256": "8c316a4b8558f5dd9a3393ad99b5f20c27ddc4768200a0b11bbb7af1e52cb918"
+    "bytes": 30120,
+    "sha256": "5a6746e958c438e71a0ed5df0aa1bf7abd29699a2fbe89b7feb04254d659529f"
   },
   {
     "path": "src/audio.js",
-    "bytes": 5520,
-    "sha256": "7f4c2e95a818e819c446c2b0bd9eeed4a95a429a33f574cada59992a5514cbb7"
+    "bytes": 5388,
+    "sha256": "971c9f4240d11c05d63afaa369b9deae1086d0b8f3967a1c68e6aba94239a256"
   },
   {
     "path": "src/cabin.js",
@@ -286,12 +286,12 @@
   },
   {
     "path": "src/flight.js",
-    "bytes": 6946,
-    "sha256": "f1c29b96a0a8bdb0d26dd1f892f41009e7381cce403014cc1ab86cee70ff6075"
+    "bytes": 6836,
+    "sha256": "af15ad7b5b1324de654f7447a210da9338e5a7469ad8fb409f3b1277ca440052"
   },
   {
     "path": "src/styles.css",
-    "bytes": 77472,
-    "sha256": "75d4bef795af416f37b121c62c5e1177aee3640499a454cfdbe2e55500925aef"
+    "bytes": 76900,
+    "sha256": "007cb09b0910353ffdd090f37f54e0bf814e679a3df1c69e79fb2bb6c669ed82"
   }
 ]

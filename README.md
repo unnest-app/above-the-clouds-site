@@ -2,7 +2,7 @@
 
 Public deployment files for the free Above the Clouds flight experience.
 
-Site: https://unnest-app.github.io/above-the-clouds-site/
+Site: https://clouds.unnest.app/
 
 This repository contains compiled runtime files and license notices only.
 Development history, planning documents, QA captures and generation tools are

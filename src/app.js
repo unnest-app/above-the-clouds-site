@@ -7,18 +7,18 @@ let selected=routes[0], airline=airlines[0], cabinClass='economy', flight=null, 
 const clock=seconds=>`${String(Math.floor(seconds/60)).padStart(2,'0')}:${String(Math.floor(seconds%60)).padStart(2,'0')}`;
 function stopVoice(){if(voice){voice.pause();voice=null;}$('voice-preview').textContent='Preview voice';$('voice-preview').setAttribute('aria-pressed','false');}
 function playVoice(){
-  stopVoice();voice=new Audio(`/above-the-clouds-site/assets/audio/announcements/${airline.id}-${selected.id}-boarding.wav`);voice.volume=.42;
+  stopVoice();voice=new Audio(`/assets/audio/announcements/${airline.id}-${selected.id}-boarding.wav`);voice.volume=.42;
   const playing=voice;$('voice-preview').textContent='Stop voice';$('voice-preview').setAttribute('aria-pressed','true');
   playing.play().catch(()=>{$('preview-note').textContent='Voice preview is unavailable.';});
 }
 const skies={
-  runway:{path:'/above-the-clouds-site/assets/cabin-ground-v3.png',width:1672,height:941,crop:'360 65 430 580'},
-  ascent:{path:'/above-the-clouds-site/assets/clouds-photo-v5.jpg',width:1760,height:1160,crop:'0 0 1760 1160'},
-  'arrival-ground':{path:'/above-the-clouds-site/assets/cabin-ground-v3.png',width:1672,height:941,crop:'360 65 430 580'},
-  'cloud-sea':{path:'/above-the-clouds-site/assets/clouds-photo-v5.jpg',width:1760,height:1160,crop:'0 0 1760 1160'},
-  'open-sky':{path:'/above-the-clouds-site/assets/clouds-photo-v5.jpg',width:1760,height:1160,crop:'0 0 1760 700'},
-  sunset:{path:'/above-the-clouds-site/assets/sky-sunset-v15.jpg',width:2048,height:1536,crop:'0 650 640 680'},
-  'blue-hour':{path:'/above-the-clouds-site/assets/clouds-photo-v5.jpg',width:1760,height:1160,crop:'0 0 1760 1160'}
+  runway:{path:'/assets/cabin-ground-v3.png',width:1672,height:941,crop:'360 65 430 580'},
+  ascent:{path:'/assets/clouds-photo-v5.jpg',width:1760,height:1160,crop:'0 0 1760 1160'},
+  'arrival-ground':{path:'/assets/cabin-ground-v3.png',width:1672,height:941,crop:'360 65 430 580'},
+  'cloud-sea':{path:'/assets/clouds-photo-v5.jpg',width:1760,height:1160,crop:'0 0 1760 1160'},
+  'open-sky':{path:'/assets/clouds-photo-v5.jpg',width:1760,height:1160,crop:'0 0 1760 700'},
+  sunset:{path:'/assets/sky-sunset-v15.jpg',width:2048,height:1536,crop:'0 650 640 680'},
+  'blue-hour':{path:'/assets/clouds-photo-v5.jpg',width:1760,height:1160,crop:'0 0 1760 1160'}
 };
 function updateSky(){
   const next=flight?skyOf(flight,selected.id):'runway';
@@ -114,7 +114,7 @@ function lookSide(direction){
   const views=['window','seat','table'],current=cabin.view==='rest'?'seat':cabin.view;
   lookAround(views[Math.max(0,Math.min(2,views.indexOf(current)+direction))]);
 }
-function pageSound(){if(!sound||flight.paused)return;pageEffect?.pause();pageEffect=new Audio('/above-the-clouds-site/assets/audio/page-turn.wav');pageEffect.volume=headphones?.3:.65;void pageEffect.play().catch(()=>{});}
+function pageSound(){if(!sound||flight.paused)return;pageEffect?.pause();pageEffect=new Audio('/assets/audio/page-turn.wav');pageEffect.volume=headphones?.3:.65;void pageEffect.play().catch(()=>{});}
 function tick(now){
   const seconds=Math.max(0,(now-lastTick)/1000);
   if(flight){if(!flight.paused&&!['closing','complete'].includes(sceneOf(flight))){const reading=readFor(cabin,Math.min(seconds,Math.max(0,timingOf(flight).closing-flight.elapsed)));cabin=serveFor(reading.state,seconds);if(reading.turned){bookTurningUntil=now+1800;pageSound();}}flight=advance(flight,seconds);render();}
@@ -183,7 +183,7 @@ function render(){
       $('ending-city').textContent=flight.city;
       $('ending-flight').textContent=`${airline.name} · ${airline.flight} · ${cabinName()} · Seat ${seatNumber()}`;
       $('destination-card').hidden=flight.early;
-      $('ending-photo').setAttribute('src',`/above-the-clouds-site/assets/postcard-${selected.id}-v19.png`);
+      $('ending-photo').setAttribute('src',`/assets/postcard-${selected.id}-v19.png`);
       $('ending-photo').setAttribute('alt',`${flight.city} — a little glimpse of the journey ahead`);
       $('complete-title').classList.toggle('sr-only',!flight.early);
       $('completion-note').hidden=!flight.early;

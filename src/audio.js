@@ -14,7 +14,7 @@ export class CabinAudio {
       this.fxGain=this.context.createGain();this.fxGain.gain.value=.6;this.fxGain.connect(this.context.destination);
       this.paGain=this.context.createGain();this.paGain.gain.value=.42;this.paGain.connect(this.context.destination);
       this.loading=(async()=>{
-        const response=await fetch('/above-the-clouds-site/assets/audio/cabin-recording-loop.wav');
+        const response=await fetch('/assets/audio/cabin-recording-loop.wav');
         if(!response.ok)throw new Error('Cabin recording unavailable');
         const buffer=await this.context.decodeAudioData(await response.arrayBuffer());
         const source=this.context.createBufferSource();source.buffer=buffer;source.loop=true;source.connect(this.filter);this.filter.connect(this.gain);source.start();
@@ -35,7 +35,7 @@ export class CabinAudio {
     if(enabled&&!this.musicLoading){
       this.musicGain=this.context.createGain();this.musicGain.gain.value=0;this.musicGain.connect(this.context.destination);
       this.musicLoading=(async()=>{
-        const buffer=await this.loadClip('/above-the-clouds-site/assets/audio/lounge-original.wav');
+        const buffer=await this.loadClip('/assets/audio/lounge-original.wav');
         const source=this.context.createBufferSource();source.buffer=buffer;source.loop=true;source.connect(this.musicGain);source.start();
       })();
     }
@@ -50,7 +50,7 @@ export class CabinAudio {
     if(!this.clips.has(path))this.clips.set(path,(async()=>{const response=await fetch(path);if(!response.ok)throw new Error('Announcement unavailable');return this.context.decodeAudioData(await response.arrayBuffer());})());
     return this.clips.get(path);
   }
-  preloadAnnouncements(airline,route){for(const path of [`/above-the-clouds-site/assets/audio/announcements/${airline}-captain.wav`,'/above-the-clouds-site/assets/audio/takeoff-roll.wav','/above-the-clouds-site/assets/audio/landing-roll.wav'])void this.loadClip(path).catch(()=>{});for(const phase of ['boarding','arrival'])void this.loadClip(`/above-the-clouds-site/assets/audio/announcements/${airline}-${route}-${phase}.wav`).catch(()=>{});}
+  preloadAnnouncements(airline,route){for(const path of [`/assets/audio/announcements/${airline}-captain.wav`,'/assets/audio/takeoff-roll.wav','/assets/audio/landing-roll.wav'])void this.loadClip(path).catch(()=>{});for(const phase of ['boarding','arrival'])void this.loadClip(`/assets/audio/announcements/${airline}-${route}-${phase}.wav`).catch(()=>{});}
   stopRunway(){this.fxToken++;this.fxSource?.stop();this.fxSource=null;this.fxKey=null;}
   setRunway(cue,enabled){
     if(!enabled||!cue){if(this.fxKey)this.stopRunway();return;}

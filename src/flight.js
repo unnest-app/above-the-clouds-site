@@ -44,7 +44,7 @@ export function announcementOf(state,route){
   const speech=speechTiming(state);
   const phase=state.elapsed>=arrival?'arrival':state.elapsed>=speech.captainStart&&state.elapsed<speech.captainEnd?'captain':state.elapsed>=3&&state.elapsed<speech.boardingEnd?'boarding':null;
   if(!phase)return null;
-  return {key:phase,path:`/above-the-clouds-site/assets/audio/announcements/${state.airline}-${phase==='captain'?'captain':`${route}-${phase}`}.wav`,offset:state.elapsed-(phase==='boarding'?3:phase==='captain'?speech.captainStart:arrival)};
+  return {key:phase,path:`/assets/audio/announcements/${state.airline}-${phase==='captain'?'captain':`${route}-${phase}`}.wav`,offset:state.elapsed-(phase==='boarding'?3:phase==='captain'?speech.captainStart:arrival)};
 }
 export function sceneOf(state) {
   const timing = timingOf(state);
@@ -76,9 +76,9 @@ export function advanceDeparture(state,seconds){
 
 // Illustrative routes share Seoul as their origin and follow each flight's own clock.
 export const flightMaps = Object.freeze({
-  Tokyo:{asset:'/above-the-clouds-site/assets/east-asia-map-v22.svg',start:{x:159.6,y:154.4},control:{x:284,y:96},end:{x:413.8,y:199.4},originAnchor:'end',destinationAnchor:'start'},
-  Bangkok:{asset:'/above-the-clouds-site/assets/bangkok-map-v36.svg',start:{x:381.01,y:82.5},control:{x:220,y:100},end:{x:65.56,y:270.77},originAnchor:'start',destinationAnchor:'end'},
-  Paris:{asset:'/above-the-clouds-site/assets/paris-map-v36.svg',start:{x:503.92,y:201.59},control:{x:280,y:70},end:{x:38.65,y:153.61},originAnchor:'end',destinationAnchor:'start'}
+  Tokyo:{asset:'/assets/east-asia-map-v22.svg',start:{x:159.6,y:154.4},control:{x:284,y:96},end:{x:413.8,y:199.4},originAnchor:'end',destinationAnchor:'start'},
+  Bangkok:{asset:'/assets/bangkok-map-v36.svg',start:{x:381.01,y:82.5},control:{x:220,y:100},end:{x:65.56,y:270.77},originAnchor:'start',destinationAnchor:'end'},
+  Paris:{asset:'/assets/paris-map-v36.svg',start:{x:503.92,y:201.59},control:{x:280,y:70},end:{x:38.65,y:153.61},originAnchor:'end',destinationAnchor:'start'}
 });
 export function mapPosition(state){
   const route=flightMaps[state.city];
@@ -99,5 +99,5 @@ export function runwayCueOf(state){
   const landing=start===timing.closing-8;
   if(state.elapsed<start||state.elapsed>=start+(landing?8:12))return null;
   const key=landing?'landing-roll':'takeoff-roll';
-  return {key,path:`/above-the-clouds-site/assets/audio/${key}.wav`,offset:state.elapsed-start};
+  return {key,path:`/assets/audio/${key}.wav`,offset:state.elapsed-start};
 }
