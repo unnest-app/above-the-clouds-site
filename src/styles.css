@@ -911,3 +911,18 @@ body.dim[data-cabin-class="business"] .tray.service-active #clear-drink {
 .audio-controls #music-toggle { position: static; display: inline-flex; align-items: center; gap: 4px; border-radius: 0 4px 4px 0; border-left: 0 !important; font-size: inherit; }
 .audio-controls #music-toggle > span:first-child { font-size: 17px; }
 .audio-controls #music-toggle[aria-pressed="true"] { background: rgb(232, 214, 183); color: rgb(53, 73, 82); border-color: rgb(154, 118, 63) !important; }
+/* Keep listening controls still as on/off labels change. */
+.audio-controls { gap: 0; }
+.audio-controls #sound-toggle { width: 86px; margin-right: 7px; border-radius: 4px; }
+.audio-controls #noise-cancel { width: 112px; border-radius: 4px 0 0 4px; border-left: 1px solid rgba(113,135,126,.5) !important; }
+.audio-controls #music-toggle { width: 102px; justify-content: center; }
+@media (max-width: 760px) {
+  .controls { display: grid; width: min(360px, 100%); grid-template-columns: 48px 1fr 52px; gap: 6px; }
+  .controls .flight-time { grid-column: 2; grid-row: 1; padding: 0; }
+  .controls #progress-toggle { grid-column: 1; grid-row: 1; }
+  .controls #exit-open { grid-column: 3; grid-row: 1; }
+  .controls .audio-controls { grid-column: 1 / -1; grid-row: 2; justify-self: center; }
+  .audio-controls #sound-toggle { width: 76px; }
+  .audio-controls #noise-cancel { width: 100px; }
+  .audio-controls #music-toggle { width: 92px; }
+}

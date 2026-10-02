@@ -277,7 +277,7 @@
   {
     "path": "index.html",
     "bytes": 15508,
-    "sha256": "e726b699315070c87f82519a8c8101616097a863c5907219027282f537b600d7"
+    "sha256": "a5e11d560cad50f85928f5be481fa37ab6ac63fccded6d0f3f5c20b9234e84b7"
   },
   {
     "path": "src/announcement-timing.js",
@@ -287,7 +287,7 @@
   {
     "path": "src/app.js",
     "bytes": 30723,
-    "sha256": "2d02b1b3027ea604528d879777d637b7f7e9f626911f3877edf9740721eb3787"
+    "sha256": "50fcc01a8968cc46ae6f0a4f9f580742d87c510d699f32d4bada913a4289e499"
   },
   {
     "path": "src/audio.js",
@@ -302,11 +302,11 @@
   {
     "path": "src/flight.js",
     "bytes": 6851,
-    "sha256": "53059a5c131ee6f3a97e584b62d2f79c16ef6339cd93c3f7e775b1a796734e75"
+    "sha256": "105d5d5f659e3f41ac330c8752b384162520372a78b57e14fab94a8c868b64b1"
   },
   {
     "path": "src/styles.css",
-    "bytes": 78051,
-    "sha256": "5c57f03f2be3d9fbe70ed1c9b939d1298693aed3c231be215a8ff3b50eb7a312"
+    "bytes": 78989,
+    "sha256": "de390d881cbf8e25423c196bf63e8f2afc3c5c3f37576c03bf484919e3fbf2cd"
   }
 ]
