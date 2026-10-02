@@ -276,8 +276,8 @@
   },
   {
     "path": "index.html",
-    "bytes": 15426,
-    "sha256": "72fd5c862e8f22874007ba140b64b233d71478336dde0e767322fbf986e84e1b"
+    "bytes": 15478,
+    "sha256": "ab375639d9730e1a8f4e302cf08f8a1529398f792c43e60cd3059fa31e348ee2"
   },
   {
     "path": "src/announcement-timing.js",
@@ -286,8 +286,8 @@
   },
   {
     "path": "src/app.js",
-    "bytes": 30401,
-    "sha256": "c79284f806be37da76a5cde329a4bfb82401a66953b8865d8ff00d5963a13869"
+    "bytes": 30678,
+    "sha256": "035479002944a875ae12df93fa295399e53ba2ada61868a9450dc18f90d6fbc0"
   },
   {
     "path": "src/audio.js",

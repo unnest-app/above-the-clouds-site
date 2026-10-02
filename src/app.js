@@ -79,8 +79,8 @@ function renderMusic(){ $('music-toggle').setAttribute('aria-pressed',String(mus
 function renderSound(){
   $('sound-toggle').textContent=sound?'Sound on':'Sound off';
   $('sound-toggle').setAttribute('aria-pressed',String(sound));
-  $('sound-toggle').setAttribute('aria-label',sound?'Mute all sound':'Turn on cabin sound');
-  $('sound-toggle').setAttribute('title',sound?'Mute all sound':'Turn on cabin sound');
+  $('sound-toggle').setAttribute('aria-label',sound?'Turn sound off':'Turn sound on');
+  $('sound-toggle').setAttribute('title',sound?'Turn sound off':'Turn sound on');
   $('noise-cancel').disabled=!sound;
   $('noise-cancel').setAttribute('aria-pressed',String(headphones));
   $('noise-cancel').setAttribute('aria-label',`Noise cancellation ${headphones?'on':'off'}`);
@@ -122,7 +122,14 @@ function tick(now){
   else if(!document.hidden){const before=departure.stage;departure=advanceDeparture(departure,seconds);document.body.style.setProperty('--gate-veil',String(departure.stage==='scanning'?Math.min(1,departure.elapsed/.8):0));if(departure.stage==='seated')takeSeat();else if(before!==departure.stage)renderDeparture();}
   lastTick=now;
 }
+function renderInitialSound(){
+  const label=$('initial-sound').checked?'Sound on':'Sound off';
+  $('initial-sound-label').textContent=label;
+  $('initial-sound').setAttribute('aria-label',label);
+}
+$('initial-sound').addEventListener('change',renderInitialSound);
 function renderDeparture(){
+  renderInitialSound();
   const issued=departure.stage!=='choose', scanning=departure.stage==='scanning';
   document.body.dataset.departure=departure.stage;
   $('journey-marker').hidden=!issued;
