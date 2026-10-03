@@ -617,7 +617,7 @@ body.dim button:focus-visible { outline-color: rgb(255, 248, 232); }
 .map-route-travelled { fill: none; stroke: rgb(230, 201, 139); stroke-width: 2; stroke-dasharray: 100; stroke-dashoffset: 100; }
 .route-map #map-plane { fill: rgb(255, 246, 223); stroke: rgb(37, 55, 69); stroke-width: 0.7; }
 .flight-map .map-caption { font-size: 11px; color: rgb(193, 205, 202); margin: 0px; text-align: center; }
-body:has(#flight-progress:not([hidden])) #announcement { visibility: hidden; }
+
 @media (max-width: 760px) {
   #flight-progress.flight-map { padding: 12px 13px 10px; bottom: 55px; width: calc(-32px + 100vw); }
 }
@@ -926,3 +926,230 @@ body.dim[data-cabin-class="business"] .tray.service-active #clear-drink {
   .audio-controls #noise-cancel { width: 100px; }
   .audio-controls #music-toggle { width: 92px; }
 }
+
+/* Destination film and the separate postcard view. */
+.arrival-layout { display: flex; justify-content: center; align-items: center; width: 100%; }
+.arrival-player iframe { display: block; width: 100%; height: 100%; border: 0; }
+.complete-screen.with-arrival { display: block; padding: 76px 0 0; min-height: 100svh; background: #101c24; }
+body:has(.complete-screen.with-arrival) .journey-print { display: none; }
+.complete-screen.with-arrival::before { background: #101c24; }
+.with-arrival .eyebrow { position: absolute; top: 28px; right: 28px; margin: 0; animation: none; }
+.with-arrival .arrival-layout { height: max(200px, calc(100svh - 164px)); }
+.arrival-view, .arrival-player { width: 100%; height: 100%; }
+.arrival-player { background: #101c24; }
+#arrival-poster { display: block; width: 100%; height: 100%; object-fit: cover; }
+.arrival-caption { min-height: 88px; padding: 20px 180px 20px 28px; display: flex; gap: 24px; align-items: center; flex-wrap: wrap; text-align: left; }
+.arrival-caption a { color: #a6b8c0; font-size: 11px; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+.complete-screen .arrival-caption button { animation: none; margin: 0; }
+.complete-screen.with-arrival #restart { position: absolute; bottom: 23px; right: 28px; margin: 0; animation: none; }
+.with-arrival .destination-card { width: min(330px, calc(100% - 40px)); animation: none; }
+.with-arrival.postcard-open .arrival-layout { padding: 24px 0; }
+@media (max-width: 760px) {
+  .with-arrival .eyebrow { top: 30px; right: 18px; font-size: 9px; }
+  .complete-screen.with-arrival { padding-top: 76px; }
+  .with-arrival .arrival-layout { height: max(240px, calc(100svh - 216px)); }
+  .arrival-caption { padding: 20px 18px 68px; gap: 14px; }
+  .arrival-caption a { max-width: 185px; }
+  .complete-screen.with-arrival #restart { right: 18px; bottom: 18px; }
+}
+/* Full-scene arrival: keep the film behind the small journey controls. */
+.complete-screen.with-arrival { position: relative; padding: 0; background: #101c24; overflow: hidden; }
+.with-arrival .arrival-layout { position: fixed; inset: 0; height: 100svh; }
+.with-arrival .arrival-view { position: absolute; inset: 0; overflow: hidden; }
+.with-arrival .arrival-player { position: absolute; top: 50%; left: 50%; width: 100vw; height: 56.25vw; min-width: 177.78svh; min-height: 100svh; transform: translate(-50%, -50%); }
+.with-arrival #arrival-poster { position: absolute; inset: 0; }
+.with-arrival .eyebrow { position: fixed; z-index: 1; top: 28px; right: 28px; color: #f4f0e6; text-shadow: 0 1px 8px #101c24, 0 1px 3px #101c24; }
+.with-arrival .arrival-caption { position: fixed; z-index: 1; bottom: 0; left: 0; right: 170px; padding: 20px 28px; min-height: 86px; }
+.with-arrival .arrival-caption a { color: #f4f0e6; text-shadow: 0 1px 6px #101c24; }
+.with-arrival .arrival-caption button, .complete-screen.with-arrival #restart { color: #f4f0e6; background: rgba(16,28,36,.62); border-color: rgba(244,240,230,.5); }
+.complete-screen.with-arrival #restart { position: fixed; z-index: 1; }
+.with-arrival.postcard-open .arrival-layout { padding: 88px 20px; }
+.with-arrival.postcard-open .arrival-caption a { display: none; }
+@media (max-width: 760px) {
+  .with-arrival .eyebrow { top: 28px; right: 18px; }
+  .with-arrival .arrival-caption { right: 140px; padding: 18px; gap: 10px; min-height: 88px; }
+  .with-arrival .arrival-caption a { font-size: 10px; max-width: 175px; }
+}
+.with-arrival .arrival-player:not([hidden]) { animation: arrival-film-in 1.8s ease both; }
+.complete-screen .arrival-location { position: fixed; bottom: 108px; left: 20px; right: 20px; margin: 0; text-align: center; font-size: 15px; color: #f4f0e6; text-shadow: 0 1px 8px #101c24; pointer-events: none; }
+.with-arrival[data-arrival-playback="playing"] .arrival-location { animation: arrival-location-out 1s 7s ease forwards; }
+.with-arrival.postcard-open .arrival-location { display: none; }
+@keyframes arrival-film-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes arrival-location-out { to { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .with-arrival .arrival-player:not([hidden]) { animation: none; }
+}
+
+/* The destination film is background only; no foreground table or ticket. */
+.with-arrival .arrival-player, .arrival-player iframe { pointer-events: none; }
+.with-arrival .arrival-caption { z-index: 2; right: 170px; padding: 18px 28px; min-height: 76px; gap: 22px; flex-wrap: nowrap; }
+.with-arrival .arrival-caption button { border: 0; border-radius: 0; background: none; padding: 8px 0; min-height: 44px; color: #f4f0e6; text-shadow: 0 1px 5px #101c24; text-decoration: underline; text-underline-offset: 5px; font-size: 13px; }
+.complete-screen.with-arrival #restart { bottom: 18px; color: #f4f0e6; background: rgba(16,28,36,.5); border-color: #b5c1c3; }
+.arrival-listening { display: flex; align-items: center; gap: 9px; color: #f4f0e6; text-shadow: 0 1px 5px #101c24; min-height: 44px; flex-shrink: 0; }
+.arrival-listening > span:first-child { font-size: 20px; }
+#arrival-volume { width: 110px; accent-color: #eee9df; cursor: pointer; }
+#arrival-source { color: #344850; font-size: 11px; text-underline-offset: 4px; }
+.complete-screen.with-arrival .arrival-location { bottom: 108px; }
+@media (max-width: 760px) {
+  .with-arrival .arrival-caption { right: 145px; padding: 12px 18px; gap: 10px; min-height: 78px; flex-wrap: wrap; }
+  .arrival-listening { min-height: 24px; }
+  #arrival-volume { width: 90px; }
+  .with-arrival .arrival-caption button { min-height: 28px; font-size: 12px; }
+  .complete-screen.with-arrival #restart { right: 18px; bottom: 18px; font-size: 12px; }
+  .complete-screen.with-arrival .arrival-location { font-size: 13px; }
+}
+
+/* Arrival sound stays in one place; the walk remains the whole background. */
+.arrival-sound { position: relative; color: #f4f0e6; text-shadow: 0 1px 5px #101c24; }
+.arrival-sound summary { list-style: none; cursor: pointer; padding: 10px 0; min-height: 44px; display: flex; align-items: center; gap: 8px; font-size: 13px; }
+.arrival-sound summary::-webkit-details-marker { display: none; }
+.arrival-sound-panel { position: absolute; bottom: calc(100% + 10px); left: 0; width: 220px; padding: 16px; background: rgba(16,28,36,.88); border-radius: 6px; }
+.arrival-sound-panel label { display: flex; justify-content: space-between; align-items: center; gap: 16px; font-size: 13px; min-height: 38px; }
+.arrival-sound-panel input { width: 130px; accent-color: #eee9df; cursor: pointer; }
+.arrival-sound-panel #arrival-volume { width: 130px; }
+.arrival-sound summary:focus-visible { outline: 2px solid #eee9df; outline-offset: 4px; }
+
+/* Stable lower navigation, with listening options in one anchored panel. */
+.journey-bottom { width: min(640px, calc(100% - 28px)); bottom: max(18px, env(safe-area-inset-bottom)); }
+.controls { display: flex; flex-wrap: nowrap; width: auto; gap: 10px; }
+.controls .flight-time { padding: 0 10px 0 0; min-width: 112px; color: #fff8e8; text-shadow: 0 1px 4px #101c24, 0 0 8px #101c24; }
+.controls > button, .cabin-sound > summary { min-height: 44px; min-width: 62px; touch-action: manipulation; }
+.cabin-sound { position: relative; }
+.cabin-sound > summary { display: flex; align-items: center; justify-content: center; list-style: none; cursor: pointer; padding: 8px 12px; font-size: 14px; border-radius: 4px; background: rgba(245,240,227,.92); color: #354952; border: 1px solid rgba(113,135,126,.5); text-shadow: none; }
+.cabin-sound > summary::-webkit-details-marker { display: none; }
+.cabin-sound[open] > summary { background: #e8d6b7; border-color: #9a763f; }
+.cabin-sound > .audio-controls { position: absolute; bottom: calc(100% + 12px); left: 50%; transform: translateX(-50%); width: 210px; padding: 12px; display: flex; flex-direction: column; align-items: stretch; gap: 8px; background: rgba(37,55,69,.97); border-radius: 5px; box-shadow: 0 8px 25px #07172355; }
+.cabin-sound:not([open]) > .audio-controls { display: none; }
+.controls .cabin-sound .audio-controls button { width: 100%; margin: 0; height: 44px; border-radius: 4px; border: 1px solid rgba(113,135,126,.5) !important; justify-content: center; }
+.cabin-sound summary:focus-visible, .controls button:focus-visible, #map-close:focus-visible { outline: 2px solid #e6c98b; outline-offset: 3px; }
+#flight-progress.flight-map { width: min(480px, calc(100vw - 32px)); bottom: calc(100% + 14px); max-height: min(65svh, 440px); overflow-y: auto; padding: 14px 18px 12px; }
+.map-heading { font-size: 15px; font-weight: 600; }
+#map-close { width: 44px; height: 44px; flex-shrink: 0; background: none; border: none; padding: 0; color: #f1eddf; font-size: 26px; line-height: 1; }
+.map-remaining { margin: -3px 0 8px; color: #c4d0cf; font-size: 12px; font-variant-numeric: tabular-nums; }
+.route-map { max-height: 40svh; }
+body:has(#flight-progress:not([hidden])) #announcement { position: fixed; bottom: calc(100% + min(65svh, 440px) + 22px); width: min(500px, calc(100vw - 40px)); font-size: 14px; }
+@media (max-width: 760px) {
+  .controls { width: auto; gap: 7px; }
+  .controls .flight-time { min-width: 99px; font-size: 12px; padding-right: 3px; }
+  .controls > button, .cabin-sound > summary { font-size: 12px; min-width: 54px; padding-inline: 9px; }
+  .cabin-sound > summary { min-width: 68px; }
+  #flight-progress.flight-map { padding: 10px 14px; }
+}
+
+.geographic-map { width: 100%; height: clamp(200px, 38svh, 300px); margin: 8px 0; background: #dce4e5; text-shadow: none; isolation: isolate; }
+.flight-map .leaflet-container { font-family: SourceSans, sans-serif; }
+.flight-map .leaflet-control-attribution { color: #344850; font-size: 10px; background: #fffffff0; }
+.flight-map .leaflet-control-attribution a { color: #294f64; }
+.flight-plane-marker { color: #253745; font-size: 26px; text-shadow: 0 1px 2px white; }
+.flight-map .leaflet-tooltip { font-size: 12px; color: #253745; background: #fffffff0; border: 0; box-shadow: none; }
+.map-fit { min-height: 36px; background: transparent; color: #f1eddf; border: 1px solid #c4d0cf66; font-size: 12px; padding: 5px 12px; }
+.map-load-status { color: #c4d0cf; font-size: 11px; margin: 5px 0; }
+#flight-progress.flight-map { max-height: calc(100svh - 155px); }
+
+.flight-plane-marker svg { width: 28px; height: 28px; transform: rotate(var(--plane-heading, 0deg)); fill: #253745; stroke: #fff8e8; stroke-width: 1; }
+#route-map[hidden], #geographic-map[hidden], #map-fit[hidden] { display: none !important; }
+body:has(#flight-progress:not([hidden])) #announcement { position: static; width: auto; }
+.controls #cabin-sound #sound-toggle, .controls #cabin-sound #noise-cancel, .controls #cabin-sound #music-toggle { width: 100%; margin: 0; border-radius: 4px; }
+
+.controls #cabin-sound .audio-controls { width: 230px; }
+.controls #cabin-sound .audio-controls label { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 44px; color: #f1eddf; font-size: 13px; text-shadow: none; }
+.controls #cabin-sound #sound-toggle, .controls #cabin-sound #music-toggle { width: 140px; height: 24px; min-height: 24px; padding: 0; accent-color: #e6c98b; box-shadow: none; background: none; cursor: pointer; }
+.controls #cabin-sound #noise-cancel { height: 40px; min-height: 40px; font-size: 12px; }
+body:has(#cabin-sound[open]) #announcement { transform: translateY(-190px); }
+
+/* Seatback flight display: a curved earth in a quiet night sky. */
+#flight-progress.flight-map { width: min(520px, calc(100vw - 32px)); padding: 16px 18px 12px; background: #101b2b; border: 1px solid #68788844; border-radius: 12px; box-shadow: 0 12px 40px #01071199, inset 0 1px 0 #c8d7df18; }
+.geographic-map { height: clamp(240px, 43svh, 350px); border-radius: 5px; overflow: hidden; background: #080f20; }
+.geographic-map canvas { display: block; width: 100%; height: 100%; }
+.map-heading { font-weight: 400; font-size: 14px; letter-spacing: .04em; }
+.map-load-status { font-size: 10px; color: #9faebc; text-align: center; margin: 8px 0 0; }
+.flight-map .map-caption { color: #c4d0cf; margin-top: 6px; }
+/* Keep live captions below the globe rather than over its attribution. */
+body:has(#flight-progress:not([hidden])) #announcement { position: static; margin: 0 0 6px; transform: none; }
+/* The map caption already states Paused. Avoid a duplicate over the display. */
+body:has(#flight-progress:not([hidden])) .pause-note { visibility: hidden; }
+
+/* Map perspectives stay inside the map, separate from cabin controls. */
+.flight-map .map-views { display: flex; justify-content: center; gap: 4px; margin: 0 0 8px; }
+.flight-map .map-views button { min-height: 36px; padding: 5px 16px; font-size: 13px; border: 1px solid transparent; border-radius: 4px; background: transparent; color: #acbdcc; text-shadow: none; }
+.flight-map .map-views button[aria-pressed="true"] { background: #dce4e51a; border-color: #dce4e533; color: #fff1d2; }
+.flight-map .map-views button:focus-visible { outline: 2px solid #e6c98b; outline-offset: 2px; }
+
+/* Leave room for the film creator's lower-corner watermark. */
+.with-arrival .arrival-caption { bottom: 30px; }
+.complete-screen.with-arrival #restart { bottom: 48px; }
+.with-arrival .arrival-caption button, .arrival-sound { text-shadow: 0 1px 3px #07131c, 0 0 8px #07131c, 0 0 16px #07131c; }
+@media (max-width: 760px) {
+ .with-arrival .arrival-caption { right: 18px; bottom: 62px; padding: 8px 18px; gap: 14px; flex-wrap: wrap; }
+ .complete-screen.with-arrival #restart { bottom: 18px; }
+}
+
+/* Viewing actions belong to the scene, apart from listening and keepsakes. */
+.arrival-view-controls { position: fixed; inset: 50% 0 auto; height: 48px; pointer-events: none; }
+.postcard-open .arrival-view-controls { display: none; }
+.with-arrival .arrival-view-controls button { position: absolute; top: -24px; width: 48px; height: 48px; padding: 0; min-height: 48px; border: 0; border-radius: 0; background: transparent; color: #f4f0e6; font-size: 0; text-decoration: none; pointer-events: auto; display: grid; place-items: center; transition: color .2s; }
+.with-arrival .arrival-view-controls button[hidden] { display: none; }
+#arrival-play { left: 24px; }
+#arrival-next { right: 24px; }
+.arrival-view-controls button::before { content: ''; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 16px; height: 16px; background: currentColor; filter: drop-shadow(0 1px 3px #07131c); }
+.arrival-view-controls [data-icon="play"]::before { clip-path: polygon(25% 10%, 90% 50%, 25% 90%); }
+.arrival-view-controls [data-icon="pause"]::before { clip-path: polygon(15% 10%, 40% 10%, 40% 90%, 15% 90%, 15% 10%, 60% 10%, 85% 10%, 85% 90%, 60% 90%, 60% 10%); }
+.arrival-view-controls [data-icon="next"]::before { clip-path: polygon(40% 8%, 82% 50%, 40% 92%, 30% 82%, 55% 57%, 5% 57%, 5% 43%, 55% 43%, 30% 18%); }
+.arrival-view-controls button::after { content: attr(aria-label); position: absolute; width: max-content; max-width: 150px; padding: 6px 10px; border-radius: 4px; background: #101c24d9; font-size: 12px; line-height: 1.4; opacity: 0; pointer-events: none; transition: opacity .15s; }
+#arrival-play::after { left: calc(100% + 10px); }
+#arrival-next::after { right: calc(100% + 10px); }
+.with-arrival .arrival-view-controls button:hover, .with-arrival .arrival-view-controls button:focus-visible { background: transparent; color: #fff; }
+.arrival-view-controls button:hover::after, .arrival-view-controls button:focus-visible::after { opacity: 1; }
+.arrival-view-controls button:focus-visible { outline: 2px solid #f4f0e6; outline-offset: 4px; }
+@media (max-width: 760px) { #arrival-play { left: 14px; } #arrival-next { right: 14px; } }
+
+/* Keep the last seat in view until the destination film actually starts. */
+.with-arrival .arrival-seat-bridge { position: absolute; inset: 0; z-index: 1; background: url('/assets/cabin-seat-v32.png') center / cover; opacity: 1; pointer-events: none; transition: opacity 3s ease; }
+body[data-cabin-class="business"] .with-arrival .arrival-seat-bridge { background-image: url('/assets/business-seat-v38.png'); }
+.with-arrival[data-arrival-revealed="true"] .arrival-seat-bridge { opacity: 0; }
+.with-arrival .arrival-player:not([hidden]) { animation: none; opacity: 0; transition: opacity 3s ease; }
+.with-arrival[data-arrival-revealed="true"] .arrival-player { opacity: 1; }
+.with-arrival:not([data-arrival-revealed="true"]) .arrival-view-controls #arrival-next { visibility: hidden; }
+.with-arrival .eyebrow { animation: arrival-film-in 2s ease both; }
+@media (prefers-reduced-motion: reduce) {
+ .with-arrival .arrival-seat-bridge, .with-arrival .arrival-player { transition: none; }
+ .with-arrival .eyebrow { animation: none; }
+}
+
+.arrival-seat-bridge::after { content: ''; position: absolute; inset: 0; background: #171e22b8; }
+.arrival-bridge-window { position: absolute; left: 50%; top: 50%; width: max(100vw,177.683svh); height: max(56.281vw,100svh); transform: translate(-50%,-50%); filter: var(--tone,none); }
+.arrival-bridge-window > g { clip-path: url('#glass-mask'); }
+body[data-cabin-class="business"] .arrival-bridge-window > g { clip-path: url('#business-glass'); }
+@media (max-width:760px) {
+ body[data-cabin-class="business"] .arrival-seat-bridge { background-position: 85% center; }
+ body[data-cabin-class="business"] .arrival-bridge-window { left: calc(50% - 62.1894svh + 35vw); }
+}
+
+/* v60: restore the supplied full-scene composition as the local visual baseline. */
+.terminal-policy { margin: 8px 0; }
+.terminal-policy button,.menu-policy { background: none; border: 0; font-size: 12px; text-decoration: underline; text-underline-offset: 4px; padding: 6px 0; min-height: 32px; }
+.complete-screen .ending-policy { font-size: 12px; border: 0; animation: none; margin-top: 12px; padding: 6px; text-decoration: underline; }
+.with-arrival .ending-policy { display: none; }
+#privacy-dialog { max-height: calc(100svh - 48px); overflow-y: auto; width: min(540px,calc(100vw - 36px)); }
+#privacy-dialog p { font-size: 14px; line-height: 1.7; }
+#privacy-dialog h3 { font-size: 17px; margin-top: 22px; }
+#privacy-dialog a { color: inherit; text-underline-offset: 3px; }
+
+.complete-screen:has(#arrival-consent:not([hidden])) .ending-policy { display: none; }
+.with-arrival .ending-policy { display: none; }
+.destination-card #arrival-source { display: inline-flex; align-items: center; min-height: 44px; margin-top: 8px; color: #526a74; font-size: 12px; text-underline-offset: 4px; }
+
+/* v61: landing resolves into a quiet welcome, before the destination film. */
+.complete-screen:has(#arrival-consent:not([hidden])) { background: #0a1117; isolation: isolate; }
+.complete-screen:has(#arrival-consent:not([hidden]))::before { opacity: .08; }
+.complete-screen:has(#arrival-consent:not([hidden])) > #complete-kicker { visibility: hidden; }
+.complete-screen .arrival-consent { position: relative; width: min(620px,100%); text-align: center; color: #f2eee5; }
+.arrival-consent h2 { font-size: clamp(32px,5vw,56px); font-weight: 500; letter-spacing: -.025em; margin: 0; animation: arrival-welcome-in 1.6s .35s both; }
+.complete-screen .arrival-consent p { font-size: clamp(16px,2vw,20px); line-height: 1.6; margin: 22px 0 0; color: #c2cbd0; animation: arrival-welcome-in 1.6s 1.2s both; }
+.arrival-welcome-actions { margin-top: 38px; display: flex; justify-content: center; gap: 24px; flex-wrap: wrap; animation: arrival-welcome-in 1s 2.2s both; }
+.complete-screen .arrival-consent button { background: none; border: 0; padding: 10px 4px; margin: 0; min-height: 44px; font-size: 16px; color: #f2eee5; animation: none; }
+.complete-screen .arrival-consent #arrival-skip { color: #aebbc2; font-size: 14px; }
+.complete-screen .arrival-consent button:hover { background: none; text-decoration: underline; text-underline-offset: 6px; }
+.complete-screen:has(#arrival-consent:not([hidden])) #restart { position: fixed; bottom: 24px; right: 28px; background: none; border: 0; font-size: 12px; color: #aebbc2; animation: arrival-welcome-in 1s 2.2s both; }
+@keyframes arrival-welcome-in { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+@media (prefers-reduced-motion: reduce) { .arrival-consent h2,.complete-screen .arrival-consent p,.arrival-welcome-actions,.complete-screen:has(#arrival-consent:not([hidden])) #restart { animation: none; } }

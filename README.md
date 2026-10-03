@@ -16,4 +16,4 @@ Third-party materials retain their own licenses. See
 files. Attribution is also accessible in the site's flight menu.
 
 Deployments run through GitHub Actions to GitHub Pages. Publish only verified
-build artifacts generated for the `/above-the-clouds-site/` base path.
+build artifacts generated for the `/` base path used by clouds.unnest.app.

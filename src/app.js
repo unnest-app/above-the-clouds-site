@@ -1,8 +1,12 @@
-import {routes, airlines, createFlight, advance, finish, pause, resume, sceneOf, cabinOf, timingOf, announcementOf, skyOf, createDeparture, issueTicket, scanTicket, advanceDeparture, mapPosition, flightMaps, runwayCueOf, cabinLightOf} from './flight.js?v=b3b544dcd610';
-import {CabinAudio} from './audio.js?v=b3b544dcd610';
-import {createCabin, look, isDark, readFor, requestDrink, requestClear, serveFor} from './cabin.js?v=b3b544dcd610';
+import {routes, airlines, createFlight, advance, finish, pause, resume, sceneOf, cabinOf, timingOf, announcementOf, skyOf, createDeparture, issueTicket, scanTicket, advanceDeparture, mapPosition, flightMaps, runwayCueOf, cabinLightOf} from './flight.js?v=e9b5cc6680c2';
+import {arrivalViews, createArrivalView} from './arrival.js?v=e9b5cc6680c2';
+import {createGeographicMap} from './map.js?v=e9b5cc6680c2';
+import {CabinAudio} from './audio.js?v=e9b5cc6680c2';
+import {createCabin, look, isDark, readFor, requestDrink, requestClear, serveFor} from './cabin.js?v=e9b5cc6680c2';
 const $=id=>document.getElementById(id), audio=new CabinAudio();
-let departure=createDeparture();
+const arrivalView=createArrivalView({screen:$('complete-screen'),section:$('arrival-view'),mount:$('arrival-player'),poster:$('arrival-poster'),status:$('arrival-status'),source:$('arrival-source'),play:$('arrival-play'),next:$('arrival-next'),card:$('destination-card'),toggle:$('arrival-card-toggle'),toolbar:$('arrival-toolbar'),onStreetVolume:value=>{$('arrival-street').value=String(Math.round(value*100));$('arrival-street').setAttribute('aria-valuetext',value?`Street ${Math.round(value*100)}%`:'Street muted');}});
+const geographicMap=createGeographicMap({panel:$('flight-progress'),mount:$('geographic-map'),fallback:$('route-map'),status:$('map-load-status'),fit:$('map-fit')});
+let departure=createDeparture(), destinationVolume=0, cabinVolume=0, musicVolume=0, audioSync=0;
 let selected=routes[0], airline=airlines[0], cabinClass='economy', flight=null, sound=false, headphones=false, music=false, musicFailed=false, sky='', skyChangedAt=0, cabin=createCabin(), rendered='', lastTick=performance.now(), audioFailed=false, voice=null, noticeUntil=8, sipUntil=-1, controlsUntil=0, pageEffect=null, bookTurningUntil=0;
 const clock=seconds=>`${String(Math.floor(seconds/60)).padStart(2,'0')}:${String(Math.floor(seconds%60)).padStart(2,'0')}`;
 function stopVoice(){if(voice){voice.pause();voice=null;}$('voice-preview').textContent='Preview voice';$('voice-preview').setAttribute('aria-pressed','false');}
@@ -66,26 +70,34 @@ $('cabin-choice').addEventListener('change',()=>{cabinClass=$('cabin-choice').va
 $('airline-choice').addEventListener('change',()=>{airline=airlines.find(item=>item.id===$('airline-choice').value);stopVoice();$('preview-note').textContent='An imaginary flight. Leave whenever you like.';updateSelection();});
 $('voice-preview').addEventListener('click',()=>{if(voice){stopVoice();$('preview-note').textContent='Preview stopped.';}else{playVoice();$('preview-note').textContent=`A little welcome from ${airline.name}.`;voice.addEventListener('ended',()=>{stopVoice();$('preview-note').textContent='An imaginary flight. Leave whenever you like.';},{once:true});}});
 async function syncAudio(){
-  try{await audio.setActive(Boolean(sound&&flight&&!flight.paused&&sceneOf(flight)!=='complete'));audioFailed=false;}catch{sound=false;audioFailed=true;}
+  const token=++audioSync, arrived=Boolean(flight&&!flight.early&&sceneOf(flight)==='complete'&&arrivalViews[selected.id]);
+  if(pageEffect)pageEffect.volume=(headphones?.3:.65)*cabinVolume;audio.setCabinVolume(cabinVolume);audio.setMusicVolume(musicVolume);audio.setArrival(arrived);audio.setDestinationVolume(destinationVolume);
+  try{await audio.setActive(arrived?destinationVolume>0:Boolean((sound||music)&&flight&&!flight.paused&&sceneOf(flight)!=='complete'));if(token!==audioSync)return;audioFailed=false;}catch{if(token!==audioSync)return;sound=false;destinationVolume=0;audioFailed=true;}
+  if(token!==audioSync)return;
   if(!sound||flight?.paused||!flight||sceneOf(flight)==='complete')voice?.pause();
   if(!sound||flight?.paused||!flight||sceneOf(flight)==='complete')pageEffect?.pause();
   audio.setHeadphones(headphones);
-  try{await audio.setMusic(music);musicFailed=false;}catch{music=false;musicFailed=true;}
-  renderMusic();
+  try{await audio.setMusic(arrived?destinationVolume>0:music);if(token!==audioSync)return;musicFailed=false;}catch{if(token!==audioSync)return;music=false;destinationVolume=0;musicFailed=true;}
+  renderArrivalVolume();renderMusic();
   if(sound&&flight&&audio.context)audio.preloadAnnouncements(flight.airline,selected.id);
   renderSound();
 }
-function renderMusic(){ $('music-toggle').setAttribute('aria-pressed',String(music));$('music-toggle').setAttribute('aria-label',music?'Stop lounge music':'Listen to lounge music');$('music-label').textContent=musicFailed?'Try music':music?'Music on':'Music';}
+function renderArrivalVolume(){
+  $('arrival-volume').value=String(Math.round(destinationVolume*100));
+  const label=audioFailed||musicFailed?'Music unavailable':destinationVolume>0?`Music ${Math.round(destinationVolume*100)}%`:'Muted';
+  $('arrival-volume').setAttribute('aria-valuetext',label);$('arrival-volume-label').textContent=label;
+}
+$('arrival-street').addEventListener('input',()=>{const value=Number($('arrival-street').value);arrivalView.setStreetVolume(value/100);$('arrival-street').setAttribute('aria-valuetext',value?`Street ${value}%`:'Street muted');});
+$('arrival-volume').addEventListener('input',()=>{destinationVolume=Number($('arrival-volume').value)/100;renderArrivalVolume();void syncAudio();});
+function renderMusic(){ $('music-toggle').value=String(Math.round(musicVolume*100));$('music-toggle').setAttribute('aria-valuetext',musicFailed?'Music unavailable':`Music ${Math.round(musicVolume*100)}%`);}
 function renderSound(){
-  $('sound-toggle').textContent=sound?'Sound on':'Sound off';
-  $('sound-toggle').setAttribute('aria-pressed',String(sound));
-  $('sound-toggle').setAttribute('aria-label',sound?'Turn sound off':'Turn sound on');
-  $('sound-toggle').setAttribute('title',sound?'Turn sound off':'Turn sound on');
+  $('sound-toggle').value=String(Math.round(cabinVolume*100));
+  $('sound-toggle').setAttribute('aria-valuetext',`Cabin ${Math.round(cabinVolume*100)}%`);
   $('noise-cancel').disabled=!sound;
   $('noise-cancel').setAttribute('aria-pressed',String(headphones));
   $('noise-cancel').setAttribute('aria-label',`Noise cancellation ${headphones?'on':'off'}`);
   $('noise-cancel').setAttribute('title',!sound?'Turn sound on to use noise cancellation':headphones?'Turn noise cancellation off':'Turn noise cancellation on');
-  $('mute-all').checked=!sound;$('sound-note').hidden=!audioFailed;
+  $('mute-all').checked=!(sound||music);$('sound-note').hidden=!audioFailed;
 }
 
 function closeDialogs(){document.querySelectorAll('dialog[open]').forEach(dialog=>dialog.close());}
@@ -115,7 +127,7 @@ function lookSide(direction){
   const views=['window','seat','table'],current=cabin.view==='rest'?'seat':cabin.view;
   lookAround(views[Math.max(0,Math.min(2,views.indexOf(current)+direction))]);
 }
-function pageSound(){if(!sound||flight.paused)return;pageEffect?.pause();pageEffect=new Audio('/assets/audio/page-turn.wav');pageEffect.volume=headphones?.3:.65;void pageEffect.play().catch(()=>{});}
+function pageSound(){if(!sound||flight.paused)return;pageEffect?.pause();pageEffect=new Audio('/assets/audio/page-turn.wav');pageEffect.volume=(headphones?.3:.65)*cabinVolume;void pageEffect.play().catch(()=>{});}
 function tick(now){
   const seconds=Math.max(0,(now-lastTick)/1000);
   if(flight){if(!flight.paused&&!['closing','complete'].includes(sceneOf(flight))){const reading=readFor(cabin,Math.min(seconds,Math.max(0,timingOf(flight).closing-flight.elapsed)));cabin=serveFor(reading.state,seconds);if(reading.turned){bookTurningUntil=now+1800;pageSound();}}flight=advance(flight,seconds);render();}
@@ -178,10 +190,10 @@ function render(){
   document.body.style.setProperty('--cloud-near',`${-(flight.elapsed*4.5%1200)}px`);
   const settling=Math.max(0,1-flight.elapsed/1.5);
   document.body.style.setProperty('--boarding-veil',String(settling));
-  document.body.dataset.scene=scene;document.body.style.setProperty('--fade',String(Math.max(events.fade,settling)));audio.setFade(Math.max(events.fade,settling));
+  document.body.dataset.scene=scene;document.body.style.setProperty('--fade',String(Math.max(scene==='closing'?events.fade*.72:events.fade,settling)));audio.setFade(Math.max(events.fade,settling));
   audio.setRunway(runwayCueOf(flight),sound&&!flight.paused);
   audio.setAnnouncement(announcementOf(flight,selected.id),sound&&!flight.paused);
-  if(voice)voice.volume=.42*(1-events.fade);
+  if(voice)voice.volume=.42*cabinVolume*(1-events.fade);
   $('cabin').dataset.scene=scene;
   const lift=Math.min(1,Math.max(0,(flight.elapsed-timing.takeoff)/(timing.cruise-timing.takeoff)));
   document.body.style.setProperty('--lift',String(lift));
@@ -189,17 +201,19 @@ function render(){
     rendered=scene;
     if(scene==='complete'){
       stopVoice();audio.stopAnnouncement();closeDialogs();$('journey').hidden=true;$('complete-screen').hidden=false;
+      destinationVolume=flight.early?0:musicVolume;
+      renderArrivalVolume();
       $('complete-kicker').textContent=flight.early?'UNTIL NEXT TIME':`WELCOME TO ${flight.city.toUpperCase()}`;
       $('ending-city').textContent=flight.city;
       $('ending-flight').textContent=`${airline.name} · ${airline.flight} · ${cabinName()} · Seat ${seatNumber()}`;
-      $('destination-card').hidden=flight.early;
+      $('destination-card').hidden=true;
       $('ending-photo').setAttribute('src',postcards[selected.id]);
       $('ending-photo').setAttribute('alt',`${flight.city} — a little glimpse of the journey ahead`);
       $('complete-title').classList.toggle('sr-only',!flight.early);
       $('completion-note').hidden=!flight.early;
       $('complete-title').textContent=flight.early?'A little pause, just for you.':`Welcome to ${flight.city}. Enjoy your stay.`;
       $('completion-note').textContent=flight.early?'Thank you for spending a little time above the clouds.':'';
-      $('complete-title').tabIndex=-1;$('complete-title').focus();void syncAudio();return;
+      $('complete-title').tabIndex=-1;$('complete-title').focus();void syncAudio();if(flight.early)void arrivalView.show(selected.id,true);else{$('arrival-consent').hidden=false;$('arrival-consent-title').textContent=`Welcome to ${flight.city}.`;$('arrival-welcome-note').textContent=selected.id==='bangkok'?'Your evening is just beginning.':selected.id==='paris'?'Your morning is just beginning.':'Your night is just beginning.';$('arrival-allow').textContent=`Explore ${flight.city} ↗`;$('arrival-consent-title').tabIndex=-1;$('arrival-consent-title').focus();}return;
     }
     if(scene==='closing'){pageEffect?.pause();closeDialogs();resetView();$('flight-progress').hidden=true;$('progress-toggle').setAttribute('aria-expanded','false');}
     $('scene-label').textContent=scene.toUpperCase();$('scene-title').textContent=scene==='boarding'?'Your window seat.':scene==='takeoff'?'Here we go.':scene==='cruise'?'Above the clouds.':'Your journey is just beginning.';
@@ -244,12 +258,13 @@ function render(){
   $('progress-toggle').textContent='Map';$('flight-time').textContent=`${clock(flight.elapsed)} / ${clock(flight.duration)}`;
   $('route-progress').value=flight.elapsed/flight.duration;
   const position=mapPosition(flight);
-  if(position){$('map-plane').setAttribute('transform',`translate(${position.x} ${position.y}) rotate(${position.heading})`);$('map-travelled').style.setProperty('stroke-dashoffset',String(100*(1-position.progress)));$('map-remaining').textContent=`${clock(Math.max(0,flight.duration-flight.elapsed))} remaining`;$('map-status').textContent=flight.paused?'Paused':scene==='boarding'?'At the gate':scene==='closing'?`Arriving in ${flight.city}`:'An imaginary route.';}
+  if(position){if(!$('flight-progress').hidden)void geographicMap.update(flight.city,position.progress);$('map-plane').setAttribute('transform',`translate(${position.x} ${position.y}) rotate(${position.heading})`);$('map-travelled').style.setProperty('stroke-dashoffset',String(100*(1-position.progress)));$('map-remaining').textContent=`${clock(Math.max(0,flight.duration-flight.elapsed))} remaining`;$('map-status').textContent=flight.paused?'Paused':scene==='boarding'?'At the gate':scene==='closing'?`Arriving in ${flight.city}`:'An imaginary route.';}
   else $('flight-progress').hidden=true;
   renderSound();
 }
 function restart(){
-  stopVoice();audio.stopAnnouncement();audio.stopRunway();departure=createDeparture();flight=null;headphones=false;music=false;musicFailed=false;sky='';updateSky();bookTurningUntil=0;cabin=createCabin();rendered='';sound=false;audioFailed=false;sipUntil=-1;noticeUntil=8;
+  arrivalView.reset();$('arrival-consent').hidden=true;geographicMap.reset();$('map-view-route').setAttribute('aria-pressed','true');$('map-view-globe').setAttribute('aria-pressed','false');$('cabin-sound').open=false;destinationVolume=0;$('arrival-street').value='0';$('arrival-street').setAttribute('aria-valuetext','Street muted');$('arrival-sound').open=false;
+  stopVoice();audio.stopAnnouncement();audio.stopRunway();departure=createDeparture();flight=null;headphones=false;music=false;cabinVolume=0;musicVolume=0;musicFailed=false;sky='';updateSky();bookTurningUntil=0;cabin=createCabin();rendered='';sound=false;audioFailed=false;sipUntil=-1;noticeUntil=8;
   closeDialogs();void syncAudio();resetView();document.body.classList.remove('paused','warm','dim','reading-lit','quiet-rest');delete document.body.dataset.scene;renderWindow();
   document.body.style.removeProperty('--lift');document.body.style.removeProperty('--fade');document.body.style.removeProperty('--gate-veil');
   $('departure').hidden=false;$('journey').hidden=true;$('complete-screen').hidden=true;$('initial-sound').checked=false;
@@ -258,7 +273,7 @@ function restart(){
 }
 function takeSeat(){
   document.body.dataset.departure='seated';
-  stopVoice();flight=createFlight({city:selected.city,duration:selected.duration,airline:airline.id,cabinClass});lastTick=performance.now();sound=$('initial-sound').checked;
+  stopVoice();flight=createFlight({city:selected.city,duration:selected.duration,airline:airline.id,cabinClass});lastTick=performance.now();sound=$('initial-sound').checked;cabinVolume=sound?1:0;
   $('departure').hidden=true;$('journey').hidden=false;$('journey-marker').hidden=false;
   $('ticket-seat').textContent=`${seatNumber()} · ${cabinName()} · Window`;$('ticket-city').textContent=selected.city;$('ticket-airline').textContent=airline.name;$('ticket-flight').textContent=airline.flight;$('ticket-duration').textContent=`${selected.duration/60} min`;$('progress-city').textContent=selected.city;
   configureMap();if(cabinClass==='business')cabin={...cabin,welcomeOpen:true,welcomePending:false};resetView();render();$('scene-title').tabIndex=-1;$('scene-title').focus();void syncAudio();
@@ -277,17 +292,26 @@ document.addEventListener('visibilitychange',()=>{
   tick(performance.now());
   if(document.hidden&&!$('keep-background').checked&&sceneOf(flight)!=='complete'){flight=pause(flight);render();void syncAudio();}
 });
-$('music-toggle').addEventListener('click',()=>{music=!music;if(music)sound=true;renderMusic();renderSound();void syncAudio();});
-function setSound(enabled){sound=enabled;if(!sound){stopVoice();audio.stopAnnouncement();audio.stopRunway();}renderSound();void syncAudio();}
-$('sound-toggle').addEventListener('click',()=>setSound(!sound));
+$('music-toggle').addEventListener('input',()=>{musicVolume=Number($('music-toggle').value)/100;music=musicVolume>0;renderMusic();void syncAudio();});
+function setSound(enabled){sound=enabled;cabinVolume=enabled?1:0;if(!sound){stopVoice();audio.stopAnnouncement();audio.stopRunway();}renderSound();void syncAudio();}
+$('sound-toggle').addEventListener('input',()=>{cabinVolume=Number($('sound-toggle').value)/100;sound=cabinVolume>0;if(!sound){stopVoice();audio.stopAnnouncement();audio.stopRunway();}renderSound();void syncAudio();});
 $('noise-cancel').addEventListener('click',()=>{if(!sound)return;headphones=!headphones;renderSound();void syncAudio();});
-$('mute-all').addEventListener('change',()=>setSound(!$('mute-all').checked));
+$('mute-all').addEventListener('change',()=>{if($('mute-all').checked){music=false;musicVolume=0;renderMusic();setSound(false);}else setSound(true);});
 $('look-left').addEventListener('click',()=>lookSide(-1));
 $('look-right').addEventListener('click',()=>lookSide(1));
 $('window-open').addEventListener('click',()=>{if(!flight||['closing','complete'].includes(sceneOf(flight)))return;if(cabin.view!=='window'){lookAround('window');return;}cabin.windowZoom=!cabin.windowZoom;render();});
 $('view-back').addEventListener('click',()=>lookAround('seat'));
-document.addEventListener('keydown',event=>{if(event.key==='Escape'&&cabin.view!=='seat')lookAround('seat');});
-for(const [trigger,dialog] of [['pocket-open','pocket-dialog'],['exit-open','exit-dialog']])$(trigger).addEventListener('click',()=>{closeDialogs();$(dialog).showModal();});
+function closeMap(restoreFocus=false){$('flight-progress').hidden=true;$('progress-toggle').setAttribute('aria-expanded','false');if(restoreFocus)$('progress-toggle').focus();}
+$('map-close').addEventListener('click',()=>closeMap(true));
+for(const view of ['route','globe'])$('map-view-'+view).addEventListener('click',()=>{geographicMap.setView(view);for(const option of ['route','globe'])$('map-view-'+option).setAttribute('aria-pressed',String(view===option));});
+document.addEventListener('keydown',event=>{
+  if(event.key!=='Escape')return;
+  if(!$('flight-progress').hidden){closeMap(true);return;}
+  if($('cabin-sound').open){$('cabin-sound').open=false;$('cabin-sound').querySelector?.('summary')?.focus();return;}
+  if(cabin.view!=='seat')lookAround('seat');
+});
+$('cabin-sound').addEventListener('toggle',()=>{if($('cabin-sound').open)closeMap();});
+for(const [trigger,dialog] of [['pocket-open','pocket-dialog'],['exit-open','exit-dialog']])$(trigger).addEventListener('click',()=>{closeMap();$('cabin-sound').open=false;closeDialogs();$(dialog).showModal();});
 document.querySelectorAll('[data-close]').forEach(button=>button.addEventListener('click',()=>button.closest('dialog').close()));
 $('tray-toggle').addEventListener('click',()=>lookAround(cabin.view==='table'?'seat':'table'));
 $('tray-menu-close').addEventListener('click',()=>lookAround('seat'));
@@ -305,9 +329,9 @@ $('book-close').addEventListener('click',()=>{putBookAway();$('exit-open').focus
 $('cabin-light').addEventListener('click',()=>{cabin.cabinDark=!cabin.cabinDark;render();});
 $('rest-toggle').addEventListener('click',()=>{setView(cabin.view==='rest'?'seat':'rest');render();});
 let swipeStart=null;
-document.addEventListener('touchstart',event=>{if(!flight)return;const control=event.target.closest('button,input,select,dialog,#book');if(control&&control.id!=='window-open')return;const touch=event.touches[0];swipeStart={x:touch.clientX,y:touch.clientY};},{passive:true});
+document.addEventListener('touchstart',event=>{if(!flight)return;const control=event.target.closest('button,input,select,dialog,details,#book,#flight-progress');if(control&&control.id!=='window-open')return;const touch=event.touches[0];swipeStart={x:touch.clientX,y:touch.clientY};},{passive:true});
 document.addEventListener('touchend',event=>{if(!swipeStart)return;const touch=event.changedTouches[0],dx=touch.clientX-swipeStart.x,dy=touch.clientY-swipeStart.y;swipeStart=null;if(Math.abs(dx)>70&&Math.abs(dy)<60){event.preventDefault();lookSide(dx<0?1:-1);}},{passive:false});
-document.addEventListener('keydown',event=>{if(!flight||event.target.closest('input,select,textarea,dialog,#book'))return;if(event.key==='ArrowLeft'||event.key==='ArrowRight'){event.preventDefault();lookSide(event.key==='ArrowLeft'?-1:1);}});
+document.addEventListener('keydown',event=>{if(!flight||event.target.closest('button,input,select,textarea,dialog,details,#book,#flight-progress'))return;if(event.key==='ArrowLeft'||event.key==='ArrowRight'){event.preventDefault();lookSide(event.key==='ArrowLeft'?-1:1);}});
 $('wake-rest').addEventListener('click',()=>{controlsUntil=performance.now()+4000;render();});
 document.addEventListener('pointermove',()=>{if(cabin.view==='rest')controlsUntil=performance.now()+4000;});
 document.addEventListener('focusin',()=>{if(cabin.view==='rest')controlsUntil=performance.now()+4000;});
@@ -318,7 +342,10 @@ $('crew-call').addEventListener('click',()=>{
   render();
 });
 $('clear-drink').addEventListener('click',()=>{if(!flight||!cabinOf(flight).drinks||!cabin.drink||cabin.drinkRequest||cabin.clearingRemaining>0)return;cabin=requestClear(cabin);sipUntil=-1;render();$('service-note').tabIndex=-1;$('service-note').focus();});
-$('progress-toggle').addEventListener('click',()=>{if(!flight||sceneOf(flight)==='closing'||!mapPosition(flight))return;$('flight-progress').hidden=!$('flight-progress').hidden;$('progress-toggle').setAttribute('aria-expanded',String(!$('flight-progress').hidden));});
+$('progress-toggle').addEventListener('click',()=>{if(!flight||sceneOf(flight)==='closing'||!mapPosition(flight))return;$('cabin-sound').open=false;$('flight-progress').hidden=!$('flight-progress').hidden;$('progress-toggle').setAttribute('aria-expanded',String(!$('flight-progress').hidden));if(!$('flight-progress').hidden)void geographicMap.update(flight.city,mapPosition(flight).progress);});
 $('finish-now').addEventListener('click',()=>{tick(performance.now());flight=finish(flight);render();});
+$('arrival-allow').addEventListener('click',()=>{if(!flight||flight.early||sceneOf(flight)!=='complete')return;$('arrival-consent').hidden=true;void arrivalView.show(selected.id,false);});
+$('arrival-skip').addEventListener('click',()=>{$('arrival-consent').hidden=true;$('destination-card').hidden=false;});
+document.querySelectorAll('[data-policy-open]').forEach(button=>button.addEventListener('click',()=>{$('privacy-dialog').showModal();}));
 $('restart').addEventListener('click',restart);$('exit-restart').addEventListener('click',restart);
-updateSelection();renderDeparture();
+$('arrival-consent').hidden=true;updateSelection();renderDeparture();

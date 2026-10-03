@@ -1,7 +1,8 @@
 /** Licensed real cabin recording, played only after a user gesture. */
 export class CabinAudio {
   context=null; gain=null; fade=0; loading=null; active=false; headphones=false;
-  musicEnabled=false; musicGain=null; musicLoading=null;
+  cabinVolume=1; musicVolume=1;
+  musicEnabled=false; musicGain=null; musicLoading=null; arrival=false; destinationVolume=.55;
   fxGain=null; fxSource=null; fxKey=null; fxToken=0;
   filter=null; paGain=null; paSource=null; paKey=null; paToken=0; clips=new Map();
   async setActive(active) {
@@ -28,7 +29,7 @@ export class CabinAudio {
     if(!this.active){await this.context.suspend();return;}
     this.setHeadphones(this.headphones);
   }
-  setHeadphones(enabled){this.headphones=enabled;if(!this.context)return;this.filter.frequency.setTargetAtTime(enabled?850:12000,this.context.currentTime,.3);this.paGain.gain.setTargetAtTime(enabled?.32:.42,this.context.currentTime,.3);this.setFade(this.fade);}
+  setHeadphones(enabled){this.headphones=enabled;if(!this.context)return;this.filter.frequency.setTargetAtTime(enabled?850:12000,this.context.currentTime,.3);this.paGain.gain.setTargetAtTime((enabled?.32:.42)*this.cabinVolume,this.context.currentTime,.3);this.setFade(this.fade);}
   async setMusic(enabled){
     this.musicEnabled=enabled;
     if(!this.context)return;
@@ -43,11 +44,22 @@ export class CabinAudio {
     if(this.musicLoading){try{await this.musicLoading;}catch(error){this.musicLoading=null;this.musicEnabled=false;this.updateMusicGain();throw error;}}
     this.updateMusicGain();
   }
-  updateMusicGain(){if(this.musicGain&&this.context)this.musicGain.gain.setTargetAtTime((this.musicEnabled?(this.paKey?.07:.18):0)*(1-this.fade),this.context.currentTime,.6);}
-  setFade(fraction){this.fade=Math.max(0,Math.min(1,fraction));if(this.gain)this.gain.gain.setTargetAtTime((this.headphones?.11:.65)*(1-this.fade),this.context.currentTime,.3);this.updateMusicGain();if(this.fxGain)this.fxGain.gain.setTargetAtTime((this.headphones?.18:.6)*(1-this.fade),this.context.currentTime,.3);}
+  setCabinVolume(value){this.cabinVolume=Math.max(0,Math.min(1,Number(value)||0));this.setHeadphones(this.headphones);}
+  setMusicVolume(value){this.musicVolume=Math.max(0,Math.min(1,Number(value)||0));this.updateMusicGain();}
+  setArrival(enabled){this.arrival=enabled;this.setFade(this.fade);}
+  setDestinationVolume(value){this.destinationVolume=Math.max(0,Math.min(1,Number(value)||0));this.updateMusicGain();}
+  updateMusicGain(){if(this.musicGain&&this.context)this.musicGain.gain.setTargetAtTime((this.musicEnabled?(this.paKey?.07:.18):0)*(this.arrival?this.destinationVolume:this.musicVolume*(1-this.fade)),this.context.currentTime,1.8);}
+  setFade(fraction){this.fade=Math.max(0,Math.min(1,fraction));if(this.gain)this.gain.gain.setTargetAtTime((this.arrival?0:this.headphones?.11:.65)*this.cabinVolume*(1-this.fade),this.context.currentTime,.3);this.updateMusicGain();if(this.fxGain)this.fxGain.gain.setTargetAtTime((this.arrival?0:this.headphones?.18:.6)*this.cabinVolume*(1-this.fade),this.context.currentTime,.3);}
   loadClip(path){
     if(!this.context)return Promise.reject(new Error('Audio not enabled'));
-    if(!this.clips.has(path))this.clips.set(path,(async()=>{const response=await fetch(path);if(!response.ok)throw new Error('Announcement unavailable');return this.context.decodeAudioData(await response.arrayBuffer());})());
+    if(!this.clips.has(path)){
+      const context=this.context;
+      const pending=(async()=>{const response=await fetch(path);if(!response.ok)throw new Error('Audio unavailable');return context.decodeAudioData(await response.arrayBuffer());})().catch(error=>{
+        if(this.clips.get(path)===pending)this.clips.delete(path);
+        throw error;
+      });
+      this.clips.set(path,pending);
+    }
     return this.clips.get(path);
   }
   preloadAnnouncements(airline,route){for(const path of [`/assets/audio/announcements/${airline}-captain.wav`,'/assets/audio/takeoff-roll.wav','/assets/audio/landing-roll.wav'])void this.loadClip(path).catch(()=>{});for(const phase of ['boarding','arrival'])void this.loadClip(`/assets/audio/announcements/${airline}-${route}-${phase}.wav`).catch(()=>{});}

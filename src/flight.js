@@ -1,8 +1,8 @@
-import {boardingLengths,captainLengths} from './announcement-timing.js?v=b3b544dcd610';
+import {boardingLengths,captainLengths} from './announcement-timing.js?v=e9b5cc6680c2';
 // Names, routes and durations remain prototype proposals.
 export const routes = Object.freeze([
-  {id:'tokyo', city:'Tokyo', mood:'Dusk above the clouds', duration:300},
-  {id:'bangkok', city:'Bangkok', mood:'A warm summer night', duration:600},
+  {id:'tokyo', city:'Tokyo', mood:'Dusk flight · Tokyo after dark', duration:300},
+  {id:'bangkok', city:'Bangkok', mood:'A warm riverside evening', duration:600},
   {id:'paris', city:'Paris', mood:'The first light of morning', duration:900}
 ]);
 export const airlines = Object.freeze([
@@ -18,7 +18,7 @@ export function speechTiming(state){
 }
 export function timingOf(state) {
   if (state.duration === proposal.end) return proposal;
-  return {takeoff:Math.max(30,speechTiming(state).captainEnd+1), cruise:Math.max(Math.min(75,state.duration*.15),speechTiming(state).captainEnd+15), sunset:state.duration*.4, dim:state.duration*.6, closing:state.duration-30, arrivalAnnouncement:state.duration-28, end:state.duration};
+  return {takeoff:Math.max(30,speechTiming(state).captainEnd+1), cruise:Math.max(Math.min(75,state.city==='Tokyo'?60:state.duration*.15),speechTiming(state).captainEnd+15), sunset:state.duration*.4, dim:state.duration*.6, closing:state.duration-30, arrivalAnnouncement:state.duration-28, end:state.duration};
 }
 export function skyOf(state,route){
   const timing=timingOf(state);

@@ -6,8 +6,8 @@
   },
   {
     "path": "THIRD_PARTY_NOTICES.md",
-    "bytes": 2337,
-    "sha256": "583e08367f0af443f28dcffefdb0b209b868e1dde114bf9c67b1ac37abc2e988"
+    "bytes": 6500,
+    "sha256": "37439f5f71ccd05992f9073fff7f29abc118f3e51fce2b9a755ab3f5b0776e85"
   },
   {
     "path": "_headers",
@@ -276,8 +276,8 @@
   },
   {
     "path": "index.html",
-    "bytes": 15508,
-    "sha256": "a5e11d560cad50f85928f5be481fa37ab6ac63fccded6d0f3f5c20b9234e84b7"
+    "bytes": 20345,
+    "sha256": "49fad731e4cd3e4dc54406ef0d6c95f5470c386380cb7ed565adacfb80fb32c8"
   },
   {
     "path": "src/announcement-timing.js",
@@ -286,13 +286,18 @@
   },
   {
     "path": "src/app.js",
-    "bytes": 30723,
-    "sha256": "50fcc01a8968cc46ae6f0a4f9f580742d87c510d699f32d4bada913a4289e499"
+    "bytes": 35594,
+    "sha256": "f2df8c29f3fc137a2527820a2862bc1d8a9bc30adfe999f4de374ab13fdd1d64"
+  },
+  {
+    "path": "src/arrival.js",
+    "bytes": 10061,
+    "sha256": "72116df0733b2aae5fdc36e86f16f377c6be4bc06274035d5461e919ee6d9d84"
   },
   {
     "path": "src/audio.js",
-    "bytes": 5388,
-    "sha256": "971c9f4240d11c05d63afaa369b9deae1086d0b8f3967a1c68e6aba94239a256"
+    "bytes": 6189,
+    "sha256": "557c73e3ed87e5264b725c5aa70413f93f0c043b54fdf2aa6fe497e77d735e7f"
   },
   {
     "path": "src/cabin.js",
@@ -300,13 +305,28 @@
     "sha256": "d787cbdd537cc410b694defb798eb0c9a13930e88290bcdb6332e0de4b6c4f4e"
   },
   {
+    "path": "src/earth-land.js",
+    "bytes": 85278,
+    "sha256": "463bf9f21e0f18305479467ea304b758ae3fea3528c296b9921e14e63d6ca258"
+  },
+  {
     "path": "src/flight.js",
-    "bytes": 6851,
-    "sha256": "105d5d5f659e3f41ac330c8752b384162520372a78b57e14fab94a8c868b64b1"
+    "bytes": 6890,
+    "sha256": "f3a59cc77de71a44f6db32645391a2c726b407d31ee62afd087344ebd59cd95f"
+  },
+  {
+    "path": "src/geo-projection.js",
+    "bytes": 53900,
+    "sha256": "efda9f5a3322b4a2f2408f7ade1fa202476ee1f4f73f00366958c8f7575a2fc7"
+  },
+  {
+    "path": "src/map.js",
+    "bytes": 8636,
+    "sha256": "3bc0e6eac0ead24e6bf65e410506ef8df57b172b9e2bc5d5c2f0f8896ee515d5"
   },
   {
     "path": "src/styles.css",
-    "bytes": 78989,
-    "sha256": "de390d881cbf8e25423c196bf63e8f2afc3c5c3f37576c03bf484919e3fbf2cd"
+    "bytes": 99253,
+    "sha256": "0573943610539362d56eaa1355988f66ba1505245dfa3abfd2999bf786c0d55b"
   }
 ]
