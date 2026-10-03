@@ -1,9 +1,9 @@
-import {boardingLengths,captainLengths} from './announcement-timing.js?v=e9b5cc6680c2';
+import {boardingLengths,captainLengths} from './announcement-timing.js?v=985613b21e25';
 // Names, routes and durations remain prototype proposals.
 export const routes = Object.freeze([
-  {id:'tokyo', city:'Tokyo', mood:'Dusk flight · Tokyo after dark', duration:300},
-  {id:'bangkok', city:'Bangkok', mood:'A warm riverside evening', duration:600},
-  {id:'paris', city:'Paris', mood:'The first light of morning', duration:900}
+  {id:'tokyo', city:'Tokyo', mood:'Dusk flight · Tokyo after dark', duration:120},
+  {id:'bangkok', city:'Bangkok', mood:'A warm riverside evening', duration:120},
+  {id:'paris', city:'Paris', mood:'The first light of morning', duration:120}
 ]);
 export const airlines = Object.freeze([
   {id:'cloudline', name:'Cloudline', voice:'a-heart', flight:'CL 01'},
@@ -18,7 +18,7 @@ export function speechTiming(state){
 }
 export function timingOf(state) {
   if (state.duration === proposal.end) return proposal;
-  return {takeoff:Math.max(30,speechTiming(state).captainEnd+1), cruise:Math.max(Math.min(75,state.city==='Tokyo'?60:state.duration*.15),speechTiming(state).captainEnd+15), sunset:state.duration*.4, dim:state.duration*.6, closing:state.duration-30, arrivalAnnouncement:state.duration-28, end:state.duration};
+  return {takeoff:Math.max(30,speechTiming(state).captainEnd+1), cruise:Math.max(60,speechTiming(state).captainEnd+21), sunset:state.duration*.4, dim:state.duration*.6, closing:state.duration-30, arrivalAnnouncement:state.duration-28, end:state.duration};
 }
 export function skyOf(state,route){
   const timing=timingOf(state);
@@ -84,7 +84,12 @@ export function mapPosition(state){
   const route=flightMaps[state.city];
   if(!route||state.early)return null;
   const timing=timingOf(state);
-  const progress=Math.min(1,Math.max(0,(state.elapsed-timing.takeoff)/(timing.arrivalAnnouncement-timing.takeoff)));
+  const landing=timing.closing-8;
+  // Fixed departure/landing beats; only the cruise span stretches with duration.
+  const progress=state.elapsed<=timing.takeoff?0:state.elapsed<timing.cruise?
+    .08*(state.elapsed-timing.takeoff)/(timing.cruise-timing.takeoff):state.elapsed<landing?
+    .08+.84*(state.elapsed-timing.cruise)/(landing-timing.cruise):state.elapsed<timing.closing?
+    .92+.08*(state.elapsed-landing)/8:1;
   const {start,control,end}=route;
   const t=progress,u=1-t;
   const x=u*u*start.x+2*u*t*control.x+t*t*end.x,y=u*u*start.y+2*u*t*control.y+t*t*end.y;

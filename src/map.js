@@ -1,5 +1,5 @@
-import {land} from './earth-land.js?v=e9b5cc6680c2';
-import {geoOrthographic,geoPath,geoArea} from './geo-projection.js?v=e9b5cc6680c2';
+import {land} from './earth-land.js?v=985613b21e25';
+import {geoOrthographic,geoPath,geoArea} from './geo-projection.js?v=985613b21e25';
 // D3 uses clockwise small spherical polygons. Normalize upstream GeoJSON winding.
 export const earthGeometry={type:'MultiPolygon',coordinates:land.map(ring=>{
  const polygon={type:'Polygon',coordinates:[ring]};

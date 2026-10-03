@@ -82,6 +82,14 @@ export function createArrivalView({screen,section,mount,poster,status,source,pla
   });
   const controller={
     reset,
+    showPostcard(route){
+      reset();activeRoute=route;const view=arrivalViews[route];
+      if(!view)return;
+      cardOpen=true;card.hidden=false;toolbar.hidden=false;
+      screen.classList.toggle('with-arrival',true);screen.classList.toggle('postcard-open',true);
+      toggle.setAttribute('aria-expanded','true');toggle.textContent=`Explore ${view.city} ↗`;
+      status.textContent=view.city;
+    },
     setStreetVolume(value){streetVolume=Math.min(1,Math.max(0,Number(value)||0));syncStreet();},
     async show(route,early,index=0,volume=0){
       const alreadyRevealed=screen.dataset.arrivalRevealed==='true'&&activeRoute===route;

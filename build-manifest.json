@@ -276,8 +276,8 @@
   },
   {
     "path": "index.html",
-    "bytes": 20345,
-    "sha256": "49fad731e4cd3e4dc54406ef0d6c95f5470c386380cb7ed565adacfb80fb32c8"
+    "bytes": 21711,
+    "sha256": "d62b9acaa5751df10e2a2150a1a0ea26d3b24777d8e154c2e81c49ddc0fbb783"
   },
   {
     "path": "src/announcement-timing.js",
@@ -286,13 +286,13 @@
   },
   {
     "path": "src/app.js",
-    "bytes": 35594,
-    "sha256": "f2df8c29f3fc137a2527820a2862bc1d8a9bc30adfe999f4de374ab13fdd1d64"
+    "bytes": 37187,
+    "sha256": "f110290e289952c6dada5abd671c6798e57ed86a30c82280124a4b5782c390f5"
   },
   {
     "path": "src/arrival.js",
-    "bytes": 10061,
-    "sha256": "72116df0733b2aae5fdc36e86f16f377c6be4bc06274035d5461e919ee6d9d84"
+    "bytes": 10471,
+    "sha256": "1e62ae3740eff815d8819fcb0ee33b917e2d9f1efbce546d43dbad531db0fe7b"
   },
   {
     "path": "src/audio.js",
@@ -311,8 +311,8 @@
   },
   {
     "path": "src/flight.js",
-    "bytes": 6890,
-    "sha256": "f3a59cc77de71a44f6db32645391a2c726b407d31ee62afd087344ebd59cd95f"
+    "bytes": 7144,
+    "sha256": "8e7a445535451e8f016ebd5ea6b95309263c0bdb56c894fe96b6dbfbfb91b18a"
   },
   {
     "path": "src/geo-projection.js",
@@ -322,11 +322,11 @@
   {
     "path": "src/map.js",
     "bytes": 8636,
-    "sha256": "3bc0e6eac0ead24e6bf65e410506ef8df57b172b9e2bc5d5c2f0f8896ee515d5"
+    "sha256": "d5354d7c17bf16d3d4eac929796436f4caabb6462a16583a52be9c6fb0e77cfd"
   },
   {
     "path": "src/styles.css",
-    "bytes": 99253,
-    "sha256": "0573943610539362d56eaa1355988f66ba1505245dfa3abfd2999bf786c0d55b"
+    "bytes": 104609,
+    "sha256": "31872d32d5f5c74fae732c0caabfa4eebe302899d0d907ce072438e6608bddd2"
   }
 ]

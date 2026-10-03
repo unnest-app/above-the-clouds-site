@@ -1,12 +1,13 @@
-import {routes, airlines, createFlight, advance, finish, pause, resume, sceneOf, cabinOf, timingOf, announcementOf, skyOf, createDeparture, issueTicket, scanTicket, advanceDeparture, mapPosition, flightMaps, runwayCueOf, cabinLightOf} from './flight.js?v=e9b5cc6680c2';
-import {arrivalViews, createArrivalView} from './arrival.js?v=e9b5cc6680c2';
-import {createGeographicMap} from './map.js?v=e9b5cc6680c2';
-import {CabinAudio} from './audio.js?v=e9b5cc6680c2';
-import {createCabin, look, isDark, readFor, requestDrink, requestClear, serveFor} from './cabin.js?v=e9b5cc6680c2';
+import {routes, airlines, createFlight, advance, finish, pause, resume, sceneOf, cabinOf, timingOf, announcementOf, skyOf, createDeparture, issueTicket, scanTicket, advanceDeparture, mapPosition, flightMaps, runwayCueOf, cabinLightOf} from './flight.js?v=985613b21e25';
+import {arrivalViews, createArrivalView} from './arrival.js?v=985613b21e25';
+import {createGeographicMap} from './map.js?v=985613b21e25';
+import {CabinAudio} from './audio.js?v=985613b21e25';
+import {createCabin, look, isDark, readFor, requestDrink, requestClear, serveFor} from './cabin.js?v=985613b21e25';
 const $=id=>document.getElementById(id), audio=new CabinAudio();
 const arrivalView=createArrivalView({screen:$('complete-screen'),section:$('arrival-view'),mount:$('arrival-player'),poster:$('arrival-poster'),status:$('arrival-status'),source:$('arrival-source'),play:$('arrival-play'),next:$('arrival-next'),card:$('destination-card'),toggle:$('arrival-card-toggle'),toolbar:$('arrival-toolbar'),onStreetVolume:value=>{$('arrival-street').value=String(Math.round(value*100));$('arrival-street').setAttribute('aria-valuetext',value?`Street ${Math.round(value*100)}%`:'Street muted');}});
 const geographicMap=createGeographicMap({panel:$('flight-progress'),mount:$('geographic-map'),fallback:$('route-map'),status:$('map-load-status'),fit:$('map-fit')});
 let departure=createDeparture(), destinationVolume=0, cabinVolume=0, musicVolume=0, audioSync=0;
+let flightDuration=120, durationValid=true, durationChoice='2';
 let selected=routes[0], airline=airlines[0], cabinClass='economy', flight=null, sound=false, headphones=false, music=false, musicFailed=false, sky='', skyChangedAt=0, cabin=createCabin(), rendered='', lastTick=performance.now(), audioFailed=false, voice=null, noticeUntil=8, sipUntil=-1, controlsUntil=0, pageEffect=null, bookTurningUntil=0;
 const clock=seconds=>`${String(Math.floor(seconds/60)).padStart(2,'0')}:${String(Math.floor(seconds%60)).padStart(2,'0')}`;
 function stopVoice(){if(voice){voice.pause();voice=null;}$('voice-preview').textContent='Preview voice';$('voice-preview').setAttribute('aria-pressed','false');}
@@ -61,13 +62,28 @@ const seatNumber=()=>cabinClass==='business'?'2A':'12A';
 const cabinName=()=>cabinClass==='business'?'Business':'Economy';
 function updateSelection(){
   document.body.dataset.cabinClass=cabinClass;
-  $('terminal-ticket').textContent=`${airline.flight} · Seoul → ${selected.city} · ${selected.duration/60} min · ${cabinName()} · Seat ${seatNumber()}`;
+  $('terminal-ticket').textContent=`Seoul → ${selected.city} · ${flightDuration/60} min`;
   document.body.dataset.route=selected.id;document.body.dataset.airline=airline.id;
   $('journey-marker').textContent=`${airline.flight} ↗ ${selected.city}`;
 }
+function chooseDuration(){
+  const custom=durationChoice==='custom';
+  for(const choice of ['2','5','10','custom'])$('length-'+choice).setAttribute('aria-pressed',String(choice===durationChoice));
+  $('custom-length-label').hidden=!custom;
+  const minutes=Number(custom?$('custom-length').value:durationChoice);
+  durationValid=Number.isInteger(minutes)&&minutes>=2&&minutes<=60;
+  if(durationValid)flightDuration=minutes*60;
+  $('custom-length').setAttribute('aria-invalid',String(custom&&!durationValid));
+  $('flight-length-note').hidden=durationValid;
+  $('flight-length-note').textContent=durationValid?'':'Choose a whole number from 2 to 60 minutes.';
+  $('issue-ticket').disabled=!durationValid;
+  updateSelection();
+}
+for(const choice of ['2','5','10','custom'])$('length-'+choice).addEventListener('click',()=>{durationChoice=choice;chooseDuration();if(choice==='custom')$('custom-length').focus();});
+$('custom-length').addEventListener('input',chooseDuration);
 document.querySelectorAll('input[name="route"]').forEach(input=>input.addEventListener('change',()=>{selected=routes.find(route=>route.id===input.value);updateSelection();}));
-$('cabin-choice').addEventListener('change',()=>{cabinClass=$('cabin-choice').value==='business'?'business':'economy';updateSelection();});
-$('airline-choice').addEventListener('change',()=>{airline=airlines.find(item=>item.id===$('airline-choice').value);stopVoice();$('preview-note').textContent='An imaginary flight. Leave whenever you like.';updateSelection();});
+$('cabin-choice').addEventListener('change',()=>{if(departure.stage==='scanning')return;cabinClass=$('cabin-choice').value==='business'?'business':'economy';updateSelection();renderDeparture();$('ticket-seat-edit').open=false;});
+$('airline-choice').addEventListener('change',()=>{if(departure.stage==='scanning')return;airline=airlines.find(item=>item.id===$('airline-choice').value);stopVoice();$('preview-note').textContent='An imaginary flight. Leave whenever you like.';updateSelection();renderDeparture();$('ticket-airline-edit').open=false;});
 $('voice-preview').addEventListener('click',()=>{if(voice){stopVoice();$('preview-note').textContent='Preview stopped.';}else{playVoice();$('preview-note').textContent=`A little welcome from ${airline.name}.`;voice.addEventListener('ended',()=>{stopVoice();$('preview-note').textContent='An imaginary flight. Leave whenever you like.';},{once:true});}});
 async function syncAudio(){
   const token=++audioSync, arrived=Boolean(flight&&!flight.early&&sceneOf(flight)==='complete'&&arrivalViews[selected.id]);
@@ -136,7 +152,7 @@ function tick(now){
 }
 function renderInitialSound(){
   const label=$('initial-sound').checked?'Sound on':'Sound off';
-  $('initial-sound-label').textContent=label;
+  $('initial-sound-label').textContent=label;$('departure-sound-label').textContent=`♫ ${label}`;
   $('initial-sound').setAttribute('aria-label',label);
 }
 $('initial-sound').addEventListener('change',renderInitialSound);
@@ -148,10 +164,13 @@ function renderDeparture(){
   $('trip-choice').hidden=issued;$('issued-pass').hidden=!issued;
   $('issue-ticket').hidden=issued;$('board').hidden=!['boarding','scanning'].includes(departure.stage);$('board').disabled=departure.stage!=='boarding';
   $('change-flight').hidden=!issued;$('change-flight').disabled=scanning;
-  $('initial-sound').disabled=scanning;
-  $('departure-title').textContent=issued?'Your journey is on.':'Your next departure.';
-  $('pass-airline').textContent=`${airline.name} · ${cabinName()} · From Seoul`;$('pass-city').textContent=selected.city;
-  $('pass-seat').textContent=seatNumber();$('pass-flight').textContent=airline.flight;$('pass-duration').textContent=selected.duration/60+' min';
+  $('initial-sound').disabled=scanning;$('cabin-choice').disabled=scanning;$('airline-choice').disabled=scanning;
+  if(scanning){$('ticket-airline-edit').open=false;$('ticket-seat-edit').open=false;$('departure-sound').open=false;}
+  $('departure-title').textContent=issued?'A ticket to somewhere new.':'Where shall we go?';
+  $('pass-airline').textContent=airline.name;$('pass-city').textContent=selected.city;
+  $('pass-airport').textContent={tokyo:'HND',bangkok:'BKK',paris:'CDG'}[selected.id];
+  $('pass-seat-label').textContent=`Seat · ${cabinName()}`;
+  $('pass-seat').textContent=seatNumber();$('pass-flight').textContent=airline.flight;$('pass-duration').textContent=flightDuration/60+' min';
   $('gate-status').textContent=scanning?'✓ Boarding pass accepted':departure.stage==='boarding'?`${airline.flight} to ${selected.city} · Now boarding`:'Boarding shortly · Gate A12';
   $('gate-note').textContent=scanning?`Welcome aboard. Seat ${seatNumber()}, by the window.`:departure.stage==='boarding'?'Your flight is ready. Scan your pass when you like.':'Take a moment by the window. We are getting ready to board.';
   $('board').textContent=scanning?'Welcome aboard…':'Scan & board ↗';
@@ -267,18 +286,18 @@ function restart(){
   stopVoice();audio.stopAnnouncement();audio.stopRunway();departure=createDeparture();flight=null;headphones=false;music=false;cabinVolume=0;musicVolume=0;musicFailed=false;sky='';updateSky();bookTurningUntil=0;cabin=createCabin();rendered='';sound=false;audioFailed=false;sipUntil=-1;noticeUntil=8;
   closeDialogs();void syncAudio();resetView();document.body.classList.remove('paused','warm','dim','reading-lit','quiet-rest');delete document.body.dataset.scene;renderWindow();
   document.body.style.removeProperty('--lift');document.body.style.removeProperty('--fade');document.body.style.removeProperty('--gate-veil');
-  $('departure').hidden=false;$('journey').hidden=true;$('complete-screen').hidden=true;$('initial-sound').checked=false;
+  $('departure').hidden=false;$('journey').hidden=true;$('complete-screen').hidden=true;
   $('flight-progress').hidden=true;$('progress-toggle').setAttribute('aria-expanded','false');
   document.querySelectorAll('#drinks button').forEach(button=>button.setAttribute('aria-pressed','false'));renderDeparture();$('issue-ticket').focus();
 }
 function takeSeat(){
   document.body.dataset.departure='seated';
-  stopVoice();flight=createFlight({city:selected.city,duration:selected.duration,airline:airline.id,cabinClass});lastTick=performance.now();sound=$('initial-sound').checked;cabinVolume=sound?1:0;
+  stopVoice();flight=createFlight({city:selected.city,duration:flightDuration,airline:airline.id,cabinClass});lastTick=performance.now();sound=$('initial-sound').checked;cabinVolume=sound?1:0;
   $('departure').hidden=true;$('journey').hidden=false;$('journey-marker').hidden=false;
-  $('ticket-seat').textContent=`${seatNumber()} · ${cabinName()} · Window`;$('ticket-city').textContent=selected.city;$('ticket-airline').textContent=airline.name;$('ticket-flight').textContent=airline.flight;$('ticket-duration').textContent=`${selected.duration/60} min`;$('progress-city').textContent=selected.city;
+  $('ticket-seat').textContent=`${seatNumber()} · ${cabinName()} · Window`;$('ticket-city').textContent=selected.city;$('ticket-airline').textContent=airline.name;$('ticket-flight').textContent=airline.flight;$('ticket-duration').textContent=`${flightDuration/60} min`;$('progress-city').textContent=selected.city;
   configureMap();if(cabinClass==='business')cabin={...cabin,welcomeOpen:true,welcomePending:false};resetView();render();$('scene-title').tabIndex=-1;$('scene-title').focus();void syncAudio();
 }
-$('issue-ticket').addEventListener('click',()=>{stopVoice();departure=issueTicket();lastTick=performance.now();renderDeparture();$('pass-city').tabIndex=-1;$('pass-city').focus();});
+$('issue-ticket').addEventListener('click',()=>{if(!durationValid)return;$('departure-sound').open=false;stopVoice();departure=issueTicket();lastTick=performance.now();renderDeparture();$('pass-city').tabIndex=-1;$('pass-city').focus();});
 $('change-flight').addEventListener('click',()=>{if(departure.stage==='scanning')return;departure=createDeparture();renderDeparture();$('issue-ticket').focus();});
 $('board').addEventListener('click',()=>{
   if(flight||departure.stage!=='boarding')return;
@@ -345,7 +364,7 @@ $('clear-drink').addEventListener('click',()=>{if(!flight||!cabinOf(flight).drin
 $('progress-toggle').addEventListener('click',()=>{if(!flight||sceneOf(flight)==='closing'||!mapPosition(flight))return;$('cabin-sound').open=false;$('flight-progress').hidden=!$('flight-progress').hidden;$('progress-toggle').setAttribute('aria-expanded',String(!$('flight-progress').hidden));if(!$('flight-progress').hidden)void geographicMap.update(flight.city,mapPosition(flight).progress);});
 $('finish-now').addEventListener('click',()=>{tick(performance.now());flight=finish(flight);render();});
 $('arrival-allow').addEventListener('click',()=>{if(!flight||flight.early||sceneOf(flight)!=='complete')return;$('arrival-consent').hidden=true;void arrivalView.show(selected.id,false);});
-$('arrival-skip').addEventListener('click',()=>{$('arrival-consent').hidden=true;$('destination-card').hidden=false;});
+$('arrival-skip').addEventListener('click',()=>{if(!flight||flight.early||sceneOf(flight)!=='complete')return;$('arrival-consent').hidden=true;arrivalView.showPostcard(selected.id);});
 document.querySelectorAll('[data-policy-open]').forEach(button=>button.addEventListener('click',()=>{$('privacy-dialog').showModal();}));
 $('restart').addEventListener('click',restart);$('exit-restart').addEventListener('click',restart);
-$('arrival-consent').hidden=true;updateSelection();renderDeparture();
+$('arrival-consent').hidden=true;chooseDuration();renderDeparture();
